@@ -21,20 +21,26 @@ import AdminChatsPage from './pages/admin/AdminChatsPage';
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage';
 import HeaderComponent from "./components/HeaderComponent";
 import FooterComponent from "./components/FooterComponent";
+import RoutesWithUserChatComponent from "./components/user/RoutesWithUserChatComponent";
+import ScrollToTop from "./utils/ScrollToTop";
 
 
 function App() {
   return (
 <BrowserRouter>
+<ScrollToTop/>
 <HeaderComponent/>
   <Routes>
-    <Route path="/"  element={<HomePage/>}/>
+  <Route element={<RoutesWithUserChatComponent/>}> 
+      {/* public routes  */}
+      <Route path="/"  element={<HomePage/>}/>
     <Route path="/product-list"  element={<ProductListPage/>}/>
-    <Route path="/product-details/:id"  element={<ProductDetailsPage/>}/>
+    <Route path="/product-details"  element={<ProductDetailsPage/>}/>
     <Route path="/cart"  element={<CartPage/>}/>
     <Route path="/login"  element={<LoginPage/>}/>
     <Route path="/register"  element={<RegisterPage/>}/>
     <Route path="*"  element={"page not found"}/>
+  </Route>
 
   {/* user protected routes  */}
   <Route element={<ProtectedRoutesComponent admin={false}/>}>
@@ -45,7 +51,6 @@ function App() {
   </Route>
 
     {/* admin protected routes  */}
-
     <Route element={<ProtectedRoutesComponent admin={true}/>}>
   <Route path="/admin/users"  element={<AdminUsersPage/>}/>
   <Route path="/admin/edit-user"  element={<AdminEditUserPage/>}/>
