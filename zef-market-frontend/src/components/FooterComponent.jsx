@@ -6,7 +6,7 @@ const FooterComponent = () => {
     <footer >
   <Container fluid>
     <Row className="mt-5">
-      <Col className="bg-dark text-white text-center py-2" >copyright &copy; Zef-Market</Col>
+      <Col className="bg-dark text-white text-center py-2" >copyright &copy; Zef-Market {new Date().getFullYear()}</Col>
     </Row>
   </Container>
     </footer>
