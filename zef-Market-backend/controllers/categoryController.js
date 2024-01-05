@@ -60,7 +60,7 @@ if (categoryExist) {
  ----------------------------------------*/
  exports.saveAttribute = asyncHandler(async (req , res) => {
   const {key , value , choosenCategoryId} = req.body;
-  if (!key || !value , !choosenCategoryId) {
+  if (!key || !value || !choosenCategoryId) {
    return  res.status(400).json("all inputs are required");
   }
 const category = await CategoryModel.findOne({_id : choosenCategoryId});
@@ -93,3 +93,5 @@ await category.save();
 const cat = await CategoryModel.find({}).sort({name : "asc"});
   res.status(201).json({updatedCategory :  cat})
  })
+
+

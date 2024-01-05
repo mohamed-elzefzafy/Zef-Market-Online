@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const ReviewModel = require("./reviewModel");
 
 const ImageSchema = new mongoose.Schema({
    path : {type : String , required : true}
@@ -18,6 +19,11 @@ const productSchema = new mongoose.Schema({
     type : String,
     required : true,
   },
+  // category : {
+  //   type : mongoose.Schema.Types.ObjectId,
+  //   ref : "Category",
+  //   required : true,
+  // },
   count : {
     type : Number,
     required : true,
@@ -43,7 +49,7 @@ const productSchema = new mongoose.Schema({
   reviews : [
     {
       type : mongoose.Schema.Types.ObjectId,
-      ref : "Review"
+      ref : ReviewModel
     }
   ],
 } , {timestamps : true});
