@@ -1,6 +1,9 @@
 const asyncHandler = require("express-async-handler");
 const ProductModel = require("../models/productModel");
 const recordsPerPage = require("../config/pagination");
+const path = require("path");
+const {v4 : uuid4} = require("uuid");
+const { cloudinaryUploadImage, cloudinaryRemoveMultipleImage } = require("../utils/cloudinary");
 
 
  /**---------------------------------------
@@ -167,6 +170,17 @@ res.status(200).json(products);
   if (!product) {
     return  res.status(400).json(`this no product with id ${req.params.id}`);
   }
+
+
+if (product.images.length > 0) {
+      // Get the public ids from the images
+        const public_ids = product.images?.map((image) => image.public_id)
+      //  Delete all  images from cloudinary that belong to this product
+      if (public_ids?.length > 0) {
+        await cloudinaryRemoveMultipleImage(public_ids)
+      }
+}
+
   product = await ProductModel.findByIdAndDelete(req.params.id);
 
   res.status(200).json("product deleted successfully");
@@ -196,7 +210,7 @@ if (atributesTable && atributesTable.length > 0) {
 
 await product.save();
 
-  res.status(201).json({message : "product created"});
+  res.status(201).json({message : "product created" , product});
    }) 
 
 
@@ -232,19 +246,89 @@ await product.save();
 
          /**---------------------------------------
  * @desc    update Product for Admin
- * @route   /api/v1/products/admin/:id
- * @method  PUT
+ * @route   /api/v1/products/admin/upload
+ * @method  POST
  * @access  private 
  ----------------------------------------*/
  exports.adminUpload = asyncHandler(async (req , res) => {
-if (!req.files || !!req.files.images === false) {
-  return  res.status(400).json("No files uploaded");
-} 
+  if (!req.query.productId) {
+    return  res.status(400).json(`insert the product id`);
+}
+const product =  await ProductModel.findById(req.query.productId);
+if (!product) {
+  return  res.status(400).json(`this no product with id ${req.query.productId}`);
+}
 
-  if (Array.isArray(req.files.images)) {
-    res.send("you uploaded" + " " + req.files.images.length + " " + "image")
-  } else {
-    res.send("you uploaded one image")
-  }
-// res.status(201).json("uploaded")
+
+let results = [];
+
+for (let file of req.files) {
+  const result =  await cloudinaryUploadImage(file?.path);
+results.push(result);
+}
+
+let resultsArrayOfObjects = [];
+ results.map(oneResult => {
+resultsArrayOfObjects.push( {
+  url :  oneResult.url,
+  public_id : oneResult.public_id
+})
+})
+
+product.images = resultsArrayOfObjects;
+await product.save();
+res.status(201).json(product);
  })
+
+
+         /**---------------------------------------
+ * @desc    update Product for Admin
+ * @route   /api/v1/products/admin/update
+ * @method  PUT
+ * @access  private 
+ ----------------------------------------*/
+ exports.adminUpdateProductImages = asyncHandler(async (req , res) => {
+
+  if (!req.query.productId) {
+      return  res.status(400).json(`insert the product id`);
+  }
+  const product =  await ProductModel.findById(req.query.productId);
+  if (!product) {
+    return  res.status(400).json(`this no product with id ${req.query.productId}`);
+}
+
+
+if (product.images.length > 0) {
+  // Get the public ids from the images
+  const public_ids = product.images?.map((image) => image.public_id)
+  //  Delete all  images from cloudinary that belong to this product
+if (public_ids?.length > 0) {
+  await cloudinaryRemoveMultipleImage(public_ids)
+}
+}
+
+let results = [];
+
+for (let file of req.files) {
+  const result =  await cloudinaryUploadImage(file?.path);
+results.push(result);
+}
+console.log("res" ,  results);
+
+let resultsArrayOfObjects = [];
+ results.map(oneResult => {
+resultsArrayOfObjects.push( {
+  url :  oneResult.url,
+  public_id : oneResult.public_id
+})
+})
+
+console.log("ar" ,resultsArrayOfObjects);
+
+
+product.images = resultsArrayOfObjects;
+await product.save();
+
+res.status(201).json(product);
+
+   })

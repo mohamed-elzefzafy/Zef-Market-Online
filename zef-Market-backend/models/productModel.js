@@ -45,7 +45,13 @@ const productSchema = new mongoose.Schema({
   atrrs : [
     {key : {type : String} , value : {type : String}}
   ],
-  images : [ImageSchema],
+  images : [],
+  
+// images : [
+//   {
+//     url : String ,
+//     public_id : String 
+// }],
   reviews : [
     {
       type : mongoose.Schema.Types.ObjectId,

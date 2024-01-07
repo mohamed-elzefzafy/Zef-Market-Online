@@ -6,12 +6,12 @@ const connectDb = require("./config/connectDb");
 const mongoose = require("mongoose");
 const mountRoutes = require("./routes/indexMountRoutes");
 const ProductModel = require("./models/productModel");
-const fileUpload = require("express-fileupload");
+// const fileUpload = require("express-fileupload");
 
 connectDb();
 
 app.use(express.json());
-app.use(fileUpload());
+// app.use(fileUpload());
 
 
 app.get("/", async (req, res) => {
