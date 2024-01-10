@@ -155,6 +155,7 @@ if (queryCondition) {
  * @access  private 
  ----------------------------------------*/
  exports.adminGetAllProducts = asyncHandler(async (req , res) => {
+  console.log(req.user);
 const products = await ProductModel.find({}).sort({category : 1}).select("name price category");
 res.status(200).json(products);
  })
@@ -195,7 +196,10 @@ if (product.images.length > 0) {
  ----------------------------------------*/
  exports.adminCreateProduct = asyncHandler(async (req , res) => {
   const {name , description , count , price  , category , atributesTable} = req.body;
-
+const productName = await ProductModel.findOne({name : name});
+if (productName) {
+  return  res.status(400).json(`product with this name (${name}) already exist`);
+}
 const product = new ProductModel();
 product.name = name;
 product.description = description;

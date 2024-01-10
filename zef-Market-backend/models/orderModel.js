@@ -1,7 +1,8 @@
 const  mongoose  = require("mongoose");
+const UserModel = require("./userModel");
 
 const OrderSchema = new mongoose.Schema({
-  user : { type : mongoose.Schema.Types.ObjectId , ref : "User" , required : true},
+  user : { type : mongoose.Schema.Types.ObjectId , ref : UserModel , required : true},
   orderTotal : {
     itemsCount : { type : Number , required : true},
     cartSubtotal : { type : Number , required : true},
