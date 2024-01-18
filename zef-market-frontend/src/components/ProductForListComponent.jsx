@@ -1,5 +1,6 @@
 import { Card, Button, Row, Col } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
+import { Link } from "react-router-dom";
 import { Rating } from "react-simple-star-rating";
 
 const ProductForListComponent = ({index , images}) => {
@@ -23,9 +24,12 @@ const ProductForListComponent = ({index , images}) => {
         </Card.Text>
         <Card.Text className="h4">
           150$ {" "}
-          <LinkContainer to={`/product-details`}>
+          {/* <LinkContainer to={`/product-details`}> */}
+          <Link to="/product-details">
           <Button variant="danger">See Product</Button>
-          </LinkContainer>
+          </Link>
+        
+          {/* </LinkContainer> */}
         </Card.Text>      
       </Card.Body>
       </Col>

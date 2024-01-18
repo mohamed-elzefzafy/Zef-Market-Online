@@ -25,7 +25,8 @@ const objectId = require("mongodb").ObjectId;
  * @access  private  logged in user 
  ----------------------------------------*/
  exports.getOneOrder = asyncHandler(async (req , res) => {
-  const order = await OrderModel.findOne({_id : new objectId(req.params.id) , user : new objectId(req.user._id)});
+  const order = await OrderModel.findOne({_id : new objectId(req.params.id)/* , user : new objectId(req.user._id)*/})
+  .populate("user" , "-isAdmin -password -_id -__v -createdAt -updatedAt");
   if (!order) {
     return  res.status(400).json("order not found");
   }
@@ -50,7 +51,9 @@ const objectId = require("mongodb").ObjectId;
   let qty = cartItems.map((item) => Number(item.quantity) )
 
   await ProductModel.find({_id :{$in : ids}}).then((products) => {
-    products.forEach((product , index) => { product.sales += qty[index] ;
+    products.forEach((product , index) =>
+     { product.sales += qty[index] ;
+      // TODO increase product connt with quantity 
       product.save();
     
     })})

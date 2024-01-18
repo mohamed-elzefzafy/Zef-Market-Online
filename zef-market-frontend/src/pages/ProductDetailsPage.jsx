@@ -3,8 +3,10 @@ import AddToCartMessageComponent from "../components/AddToCartMessageComponent";
 import { useEffect, useState } from "react";
 import { Rating } from "react-simple-star-rating";
 import imageZoom from "js-image-zoom";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/actions/cartActions";
 const ProductDetailsPage = () => {
-
+const dispatch = useDispatch();
   var option = {
     scale : 2 ,
     offset : {vertical : 0  , horizontal : 0}
@@ -15,6 +17,12 @@ new imageZoom(document.getElementById("second") , option);
 new imageZoom(document.getElementById("third") , option);
 new imageZoom(document.getElementById("forth") , option);
   },[])
+
+  const addToCartHandler = () => {
+dispatch(addToCart())
+  }
+
+  const products = useSelector((state) => state.cart.value)
   return (
 <Container>
 <AddToCartMessageComponent />
@@ -45,7 +53,7 @@ new imageZoom(document.getElementById("forth") , option);
           <Col md={8}>
 
           <ListGroup variant="flush">
-      <ListGroup.Item> <h1>Product Name </h1></ListGroup.Item>
+      <ListGroup.Item> <h1>Product Name {products}</h1></ListGroup.Item> 
       <ListGroup.Item> <Rating readonly initialValue={4} size={20}/> (1) </ListGroup.Item>
       <ListGroup.Item> Price : <span className="fw-bold">300$</span></ListGroup.Item>
       <ListGroup.Item> Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt, id?</ListGroup.Item>
@@ -69,7 +77,7 @@ new imageZoom(document.getElementById("forth") , option);
     </Form.Select>
       </ListGroup.Item>
       <ListGroup.Item>
-      <Button variant="danger">Add To Cart</Button>
+      <Button className="cursor-pointer"   onClick={addToCartHandler} variant="danger">Add To Cart</Button>
       </ListGroup.Item>
     </ListGroup>
 

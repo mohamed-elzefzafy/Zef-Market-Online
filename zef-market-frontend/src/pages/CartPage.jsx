@@ -12,7 +12,14 @@ const CartPage = () => {
 
 <ListGroup variant="flush">
 {Array.from({length : 3}).map((item , index) => (
-    <CartItemComponent key={index}/> 
+    <CartItemComponent key={index} item={   {
+     name : "zef",
+      price : 4555,
+      image : {"path" : "path to image"},
+      quantity : 3,
+      count :7,
+      productId : "659f0200df02bae4e9f55d51"
+        }}/> 
 ))}
 </ListGroup>
 

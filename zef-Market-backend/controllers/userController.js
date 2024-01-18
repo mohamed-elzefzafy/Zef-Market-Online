@@ -95,7 +95,7 @@ if (!validePassword) {
 
 let cookieParam = {
   httpOnly : true,
-  secure : process.env.NODE_ENV === "production",
+  secure : process.env.NODE_ENV !== "production",
   sameSite : "strict",
 }
 
@@ -105,7 +105,7 @@ if (doNotLogout) {
 const token =  generateAuthToken(user._id , user.name , user.lastName , user.email , user.isAdmin);
 
 
-res.cookie("access_token" , token , cookieParam).status(200).json({success: "user logged in successfully" , 
+res.cookie("access_token" , token , cookieParam ).status(200).json({success: "user logged in successfully" , 
 loggedUser :  {
   _id : user._id ,
   name : user.name ,
