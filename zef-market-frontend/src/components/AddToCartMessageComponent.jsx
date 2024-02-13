@@ -1,16 +1,19 @@
-import { useState } from "react";
 import { Alert, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
-const AddToCartMessageComponent = () => {
-  const [show, setShow] = useState(true);
+const AddToCartMessageComponent = ({showCartMessage , setShowCartMessage}) => {
+const navigate = useNavigate();
+
+const goBack = () => {
+  navigate(-1);
+}
 
     return (
-      <Alert show={show} variant="success" onClose={() => setShow(false)} dismissible>
+      <Alert show={showCartMessage} variant="success" onClose={() => setShowCartMessage(false)} dismissible>
         <Alert.Heading>The Product added To Your Cart!</Alert.Heading>
         <p>
-        <Button variant="success" className="me-1">Go Back</Button>
+        <Button variant="success" className="me-1" onClick={goBack}>Go Back</Button>
         <Link to="/cart">
         <Button variant="danger">Go To Cart</Button>
         </Link>
@@ -20,7 +23,7 @@ const AddToCartMessageComponent = () => {
       </Alert>
     );
 
-  // return <Button onClick={() => setShow(true)}>Show Alert</Button>;
+
 }
 
 export default AddToCartMessageComponent;

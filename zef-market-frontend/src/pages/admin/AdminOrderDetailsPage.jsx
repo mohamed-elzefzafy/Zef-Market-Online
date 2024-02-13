@@ -6,12 +6,12 @@ const AdminOrderDetailsPage = () => {
 
   const getOrder = async(id) => 
   {
-  const {data} = await request.get(`http://localhost:8000/api/v1/orders/user/${id}`)
+  const {data} = await request.get(`/api/v1/orders/user/${id}`)
   return data;
    }
 
    const markAsDeliver = async (id) => {
-    const {data} = await request.put(`http://localhost:8000/api/v1/orders/delivered/${id}`);
+    const {data} = await request.put(`/api/v1/orders/delivered/${id}`);
     if (data) {
       return data;
     }

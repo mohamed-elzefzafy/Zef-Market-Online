@@ -4,6 +4,8 @@ const recordsPerPage = require("../config/pagination");
 const path = require("path");
 const {v4 : uuid4} = require("uuid");
 const { cloudinaryUploadImage, cloudinaryRemoveMultipleImage } = require("../utils/cloudinary");
+const CategoryModel = require("../models/categoryModel");
+const { formatImage } = require("../middleware/photoUploadMiddleWare");
 
 
  /**---------------------------------------
@@ -79,8 +81,6 @@ console.log(sort);
 }
 
 
-
-
 const searchQuery = req.params.searchQuery || "" ;
 let searchQueryCondition = {}; 
 let select = {};
@@ -119,9 +119,10 @@ if (queryCondition) {
  * @access  public 
  ----------------------------------------*/
  exports.getOneProduct = asyncHandler(async (req , res) => {
-  const product = await ProductModel.findById(req.params.id).populate("reviews");
+  const product = await ProductModel.findById(req.params.id).populate("reviews")
+  .populate("category" , "-description -image  -__v -createdAt -updatedAt");
   if (!product) {
-    return  res.status(400).json(`this no product with id ${req.params.id}`);
+    return  res.status(400).json(`ther's no product with id ${req.params.id}`);
   }
 
   res.status(200).json(product);
@@ -155,8 +156,8 @@ if (queryCondition) {
  * @access  private 
  ----------------------------------------*/
  exports.adminGetAllProducts = asyncHandler(async (req , res) => {
-  console.log(req.user);
-const products = await ProductModel.find({}).sort({category : 1}).select("name price category");
+const products = await ProductModel.find({}).sort({category : 1}).select("name price category images")
+.populate("category" , "-description -image  -__v -createdAt -updatedAt");;
 res.status(200).json(products);
  })
 
@@ -195,11 +196,23 @@ if (product.images.length > 0) {
  * @access  private 
  ----------------------------------------*/
  exports.adminCreateProduct = asyncHandler(async (req , res) => {
-  const {name , description , count , price  , category , atributesTable} = req.body;
+  const {name , description , count , price  , category , attrKey , attrValue , attrKey2 , attrValue2} = req.body;
+  if (!name || !description || !count || !price  || !category) {
+    return  res.status(400).json(`complete product fields`);
+  }
+
+  // if (!req.files) {
+  //   return  res.status(400).json(`one image at least forproduct is required`);
+  // }
 const productName = await ProductModel.findOne({name : name});
 if (productName) {
   return  res.status(400).json(`product with this name (${name}) already exist`);
 }
+let categoryExist= await CategoryModel.findOne({_id : category});
+if (!categoryExist) {
+  return  res.status(400).json(`this category not exist`);
+}
+
 const product = new ProductModel();
 product.name = name;
 product.description = description;
@@ -207,12 +220,158 @@ product.count = count;
 product.price = price;
 product.category = category;
 
-if (atributesTable && atributesTable.length > 0) {
-  atributesTable.map(attribute => product.atrrs.push(attribute));
+
+
+if (attrKey !== null  && attrValue != null && attrKey !== "" && attrValue !== "") 
+{
+  
+  if (attrKey && attrValue) {
+    const attribute = {
+      key : attrKey,
+      value : attrValue
+      }
+  
+  product.attrs.push(attribute);
+  }else {
+    product.attrs =[];
+  }
+
+  await product.save();
+  
+  // category attribute
+//   let newCategoriesAttrs =[];
+// if (categoryExist.attrs.length > 0)
+// {
+//    newCategoriesAttrs = categoryExist.attrs;
+// } else {
+//   newCategoriesAttrs = []
+// }
+//    newCategoriesAttrs = categoryExist.attrs;
+//   let isKeyExist = newCategoriesAttrs.find(attrss => attrss.key === attrKey);
+//   if (isKeyExist) 
+//   {
+//     newCategoriesAttrs = categoryExist.attrs.filter(a => a.key !== attrKey);
+//     isKeyExist.value.push(attrValue2);
+//     newCategoriesAttrs.push(isKeyExist);
+  
+//     // let keyExist = categoryExist.attrs.find(a => a.key === attrKey);
+  
+//     // newCategoriesAttrs.filter(ddd => ddd.key !== keyExist.key);
+//     // if (keyExist.value.includes(attrValue))
+//     // {
+//     //       newCategoriesAttrs.push(keyExist);
+//     // } else {
+//     //   keyExist.value.push(attrValue);
+//     //   newCategoriesAttrs.push(keyExist);
+//     // }
+  
+//     // newCategoriesAttrs.push(keyExist);
+//     for (let i = 0; i < newCategoriesAttrs.length; i++) 
+//     {
+//       newCategoriesAttrs[i].value =  [...new Set(newCategoriesAttrs[i].value)]
+//     }
+  
+  
+//     categoryExist.attrs = newCategoriesAttrs;
+//   } 
+//   else {
+//   // newCategoriesAttrs.push({key : attrKey})
+//   // let keyFound = newCategoriesAttrs.find(a => a.key === attrKey);
+//   // newCategoriesAttrs = newCategoriesAttrs.filter(ddd => ddd.key !== keyFound.key);
+//   // keyFound.value.push(attrValue);
+//   // newCategoriesAttrs.push(keyFound);
+//   let newAttr = {key : attrKey, value : [attrValue]};
+//   newCategoriesAttrs.push(newAttr);
+//   categoryExist.attrs = newCategoriesAttrs;
+//   }
+  
+//   await categoryExist.save();
+//   await product.save();
+  
+
 }
 
 
+if (attrKey2 !== null  && attrValue2 != null && attrKey2 !== "" && attrValue2 !== "") 
+{
+// attribute 2 
+let newCategoriesAttrs2 = categoryExist.attrs; 
+
+if (attrKey2 && attrValue2 &&  attrKey !== attrKey2) {
+const atrribute2 = {
+  key : attrKey2 ,
+  value : attrValue2
+}
+
+product.attrs.push(atrribute2);
+
+let existKeyInCategory = categoryExist.attrs.find(k => k.key === attrKey2);
+
+
+if (existKeyInCategory)
+{
+newCategoriesAttrs2 = categoryExist.attrs.filter(k => k.key !== attrKey2);
+existKeyInCategory.value.push(attrValue2);
+newCategoriesAttrs2.push(existKeyInCategory);
+
+} else {
+  let att2 = {key : attrKey2 , value : [attrValue2]};
+  newCategoriesAttrs2.push(att2);
+}
+
+
+for (let i = 0; i < newCategoriesAttrs2.length; i++) 
+{
+  newCategoriesAttrs2[i].value =  [...new Set(newCategoriesAttrs2[i].value)]
+}
+
+
+categoryExist.attrs = newCategoriesAttrs2;
+  
+
+
 await product.save();
+await categoryExist.save();
+
+}
+}
+
+
+
+
+
+
+
+// start 
+
+let results = [];
+
+
+const files = req.files.map(file => formatImage(file));
+
+
+for (let file of files) {
+  const result =  await cloudinaryUploadImage(file);
+results.push(result);
+}
+
+let resultsArrayOfObjects = [];
+ results.map(oneResult => {
+resultsArrayOfObjects.push( {
+  url :  oneResult.url,
+  public_id : oneResult.public_id
+})
+})
+
+product.images = resultsArrayOfObjects;
+if (product.images.length === 0)
+{
+  return  res.status(400).json(`one image at least for product is required`);
+}
+await product.save();
+
+// end 
+
 
   res.status(201).json({message : "product created" , product});
    }) 
@@ -226,7 +385,10 @@ await product.save();
  ----------------------------------------*/
  exports.adminUpdateProduct = asyncHandler(async (req , res) => {
   const product = await ProductModel.findById(req.params.id);
-  const {name , description , count , price  , category , atributesTable} = req.body;
+  if (!product) {
+    return res.status(400).json("No product with id " + req.params.id);
+  }
+  const {name , description , count , price  , category , attrKey ,  attrValue  , attrKey2 , attrValue2} = req.body;
 
 product.name = name || product.name ;
 product.description = description || product.description;
@@ -234,19 +396,219 @@ product.count = count || product.count;
 product.price = price || product.price;
 product.category = category || product.category;
 
-if (atributesTable && atributesTable.length > 0) {
-  product.atrrs = [];
-  atributesTable.map(attribute => product.atrrs.push(attribute));
-} else {
-  product.atrrs = [];
+const existAttribute = product.attrs.find(attribute => attribute.key === attrKey);
+let newProductAttrs = product.attrs
+
+if (attrKey && attrValue) {
+
+  if (existAttribute) {
+    newProductAttrs = product.attrs.filter(a => a.key !== attrKey);
+  }
+
+  const attribute = {
+    key : attrKey,
+    value : attrValue
+    }
+
+newProductAttrs.push(attribute);
+product.attrs = newProductAttrs;
+}else {
+  product.attrs = product.attrs;
 }
 
 
 await product.save();
 
 
-  res.status(201).json({message : "product Updated" , productId : product._id});
+
+// category attribute
+// let categoryExist = await CategoryModel.findById(product.category._id)
+// let newCategoriesAttrs = categoryExist.attrs;
+// const isKeyExist = newCategoriesAttrs.find(attrss => attrss.key === attrKey);
+// if (isKeyExist) 
+// {
+//   let keyExist = categoryExist.attrs.find(a => a.key === attrKey);
+
+//   newCategoriesAttrs.filter(ddd => ddd.key !== keyExist.key);
+//   if (keyExist.value.includes(attrValue))
+//   {
+//         newCategoriesAttrs.push(keyExist);
+//   } else {
+//     keyExist.value.push(attrValue);
+//     newCategoriesAttrs.push(keyExist);
+//   }
+
+//   newCategoriesAttrs.push(keyExist);
+//   for (let i = 0; i < newCategoriesAttrs.length; i++) 
+//   {
+//     newCategoriesAttrs[i].value =  [...new Set(newCategoriesAttrs[i].value)]
+//   }
+
+
+//   categoryExist.attrs = newCategoriesAttrs;
+// } 
+// else {
+// newCategoriesAttrs.push({key : attrKey})
+// let keyFound = newCategoriesAttrs.find(a => a.key === attrKey);
+// newCategoriesAttrs = newCategoriesAttrs.filter(ddd => ddd.key !== keyFound.key);
+// keyFound.value.push(attrValue);
+// newCategoriesAttrs.push(keyFound);
+// categoryExist.attrs = newCategoriesAttrs;
+// }
+
+
+
+// aaaaaaaaaaaaaaa
+
+// category attribute
+let categoryExist = await CategoryModel.findById(product.category._id)
+// let newCategoriesAttrs =[];
+// if (categoryExist.attrs.length > 0)
+// {
+//    newCategoriesAttrs = categoryExist.attrs;
+// } else {
+//   newCategoriesAttrs = []
+// }
+// let isKeyExist = newCategoriesAttrs.find(attrss => attrss.key === attrKey);
+// if (isKeyExist) 
+// {
+//   newCategoriesAttrs = categoryExist.attrs.filter(a => a.key !== attrKey);
+//   isKeyExist.value.push(attrValue2);
+//   newCategoriesAttrs.push(isKeyExist);
+
+//   // let keyExist = categoryExist.attrs.find(a => a.key === attrKey);
+
+//   // newCategoriesAttrs.filter(ddd => ddd.key !== keyExist.key);
+//   // if (keyExist.value.includes(attrValue))
+//   // {
+//   //       newCategoriesAttrs.push(keyExist);
+//   // } else {
+//   //   keyExist.value.push(attrValue);
+//   //   newCategoriesAttrs.push(keyExist);
+//   // }
+
+//   // newCategoriesAttrs.push(keyExist);
+//   for (let i = 0; i < newCategoriesAttrs.length; i++) 
+//   {
+//     newCategoriesAttrs[i].value =  [...new Set(newCategoriesAttrs[i].value)]
+//   }
+
+
+//   categoryExist.attrs = newCategoriesAttrs;
+// } 
+// else {
+// // newCategoriesAttrs.push({key : attrKey})
+// // let keyFound = newCategoriesAttrs.find(a => a.key === attrKey);
+// // newCategoriesAttrs = newCategoriesAttrs.filter(ddd => ddd.key !== keyFound.key);
+// // keyFound.value.push(attrValue);
+// // newCategoriesAttrs.push(keyFound);
+// let newAttr = {key : attrKey, value : [attrValue]};
+// newCategoriesAttrs.push(newAttr);
+// categoryExist.attrs = newCategoriesAttrs;
+// }
+
+// await categoryExist.save();
+await product.save();
+
+
+
+
+// attribute 2 
+let newCategoriesAttrs2 = categoryExist.attrs; 
+const existAttribute2 = product.attrs.find(attribute => attribute.key === attrKey2);
+let = newProductAttrs2 = product.attrs;
+if (attrKey2 && attrValue2 &&  attrKey !== attrKey2) {
+  if (existAttribute2) {
+    newProductAttrs2 = product.attrs.filter(attribute => attribute.key !== attrKey2);
+  }
+const atrribute2 = {
+  key : attrKey2 ,
+  value : attrValue2
+}
+newProductAttrs2.push(atrribute2);
+
+product.attrs = newProductAttrs2
+
+let existKeyInCategory = categoryExist.attrs.find(k => k.key === attrKey2);
+
+
+if (existKeyInCategory)
+{
+newCategoriesAttrs2 = categoryExist.attrs.filter(k => k.key !== attrKey2);
+existKeyInCategory.value.push(attrValue2);
+newCategoriesAttrs2.push(existKeyInCategory);
+
+} else {
+  let att2 = {key : attrKey2 , value : [attrValue2]};
+  newCategoriesAttrs2.push(att2);
+}
+
+
+for (let i = 0; i < newCategoriesAttrs2.length; i++) 
+{
+  newCategoriesAttrs2[i].value =  [...new Set(newCategoriesAttrs2[i].value)]
+}
+
+categoryExist.attrs = newCategoriesAttrs2;
+  
+
+
+await product.save();
+await categoryExist.save();
+
+}
+// aaaaaaaaaaaaaaa
+
+
+
+
+
+// if (atributesTable && atributesTable.length > 0) {
+//   product.atrrs = [];
+//   atributesTable.map(attribute => product.atrrs.push(attribute));
+// } else {
+//   product.atrrs = [];
+// }
+
+
+// await product.save();
+
+
+  // res.status(201).json({message : "product Updated" , productId : product._id});
+  res.status(201).json({message : "product Updated" ,  product});
+  // res.status(201).json(product);
    }) 
+
+
+            /**---------------------------------------
+ * @desc    delete product attribute
+ * @route   /api/v1/products/attribute/admin/:id
+ * @method  DELETE
+ * @access  private 
+ ----------------------------------------*/
+ exports.adminDeleteProductAtribute = asyncHandler(async (req , res) => {
+  const product = await ProductModel.findById(req.params.id);
+  if (!product)
+  {
+    return res.status(400).json("No product with id " + req.params.id); 
+  }
+
+  const existAttr = product.attrs.find(a => a.key === req.body.attribute);
+  if (!existAttr) {
+    return res.status(400).json("this attribute not exist"); 
+  }
+  let newproductAttr = product.attrs;
+  console.log(newproductAttr);
+  newproductAttr = product.attrs.filter(a => a.key !== req.body.attribute);
+  console.log(newproductAttr);
+  product.attrs = newproductAttr;
+
+  await product.save();
+
+  res.status(201).json(product);
+ })
+
+
 
          /**---------------------------------------
  * @desc    update Product for Admin
@@ -265,9 +627,10 @@ if (!product) {
 
 
 let results = [];
+const files = req.files.map(file => formatImage(file));
 
-for (let file of req.files) {
-  const result =  await cloudinaryUploadImage(file?.path);
+for (let file of files) {
+  const result =  await cloudinaryUploadImage(file);
 results.push(result);
 }
 
@@ -293,12 +656,12 @@ res.status(201).json(product);
  ----------------------------------------*/
  exports.adminUpdateProductImages = asyncHandler(async (req , res) => {
 
-  if (!req.query.productId) {
+  if (!req.params.id) {
       return  res.status(400).json(`insert the product id`);
   }
-  const product =  await ProductModel.findById(req.query.productId);
+  const product =  await ProductModel.findById(req.params.id);
   if (!product) {
-    return  res.status(400).json(`this no product with id ${req.query.productId}`);
+    return  res.status(400).json(`this no product with id ${req.params.id}`);
 }
 
 
@@ -313,8 +676,11 @@ if (public_ids?.length > 0) {
 
 let results = [];
 
-for (let file of req.files) {
-  const result =  await cloudinaryUploadImage(file?.path);
+
+const files = req.files.map(file => formatImage(file));
+
+for (let file of files) {
+  const result =  await cloudinaryUploadImage(file);
 results.push(result);
 }
 console.log("res" ,  results);
@@ -336,3 +702,41 @@ await product.save();
 res.status(201).json(product);
 
    })
+
+
+
+            /**---------------------------------------
+ * @desc    remove One Image for Admin
+ * @route   /api/v1/products/admin/removeimage/:id
+ * @method  PUT
+ * @access  private 
+ ----------------------------------------*/
+ exports.removeOneImage = asyncHandler(async (req , res) => {
+
+  let product = await ProductModel.findById(req.params.id);
+
+  if (!product) {
+    return  res.status(400).json(`this no product with id ${req.params.id}`);
+}
+
+
+
+const  imageId  = product.images.find(img =>  img.public_id === req.body.publicId);
+
+if (!imageId) {
+  return  res.status(400).json(`this image not exists`);
+}
+
+product = await ProductModel.findOneAndUpdate({_id : req.params.id} ,{$pull :
+   {images : {public_id : req.body.publicId}}} , {new : true});
+
+   await cloudinaryRemoveMultipleImage(imageId.public_id)
+
+res.status(200).json(product)
+ })
+
+
+ 
+
+
+

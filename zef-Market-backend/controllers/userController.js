@@ -8,6 +8,10 @@ const ReviewModel = require("../models/reviewModel");
 const reviews = require("../seeder/reviews");
 const { cloudinaryRemoveImage, cloudinaryUploadImage } = require("../utils/cloudinary");
 const objectId = require("mongodb").ObjectId;
+const jwt = require("jsonwebtoken");
+const { formatImage } = require("../middleware/photoUploadMiddleWare");
+const { resizeImages } = require("../utils/resizeImages");
+
 
  /**---------------------------------------
  * @desc    get all users
@@ -16,7 +20,7 @@ const objectId = require("mongodb").ObjectId;
  * @access  public 
  ----------------------------------------*/
  exports.getAllusers = asyncHandler(async (req , res) => {
-  const users = await UserModel.find({}).select("-password");
+  const users = await UserModel.find({}).sort({"isAdmin" : "desc"}).select("-password");
   res.status(200).json(users)
  })
 
@@ -41,12 +45,36 @@ return  res.status(400).json("this user is already exist");
 
 const hashedPassword =  hashPassword(password);
 
-const user = await UserModel.create({
+let user = await UserModel.create({
   name , lastName , email : email.toLowerCase() ,
   password : hashedPassword
 })
 
-const token =  generateAuthToken(user._id , user.name , user.lastName , user.email , user.isAdmin);
+if (req.file) {
+  const file = formatImage(req.file);
+    //  Get the user from DB
+    // const user = await UserModel.findById(req.user._id);
+  if (user.profilePhoto.public_Id !== null)
+  {
+  await  cloudinaryRemoveImage(user.profilePhoto.public_Id);
+  }
+
+  // upload the photo to cloudinary
+  const result = await cloudinaryUploadImage(file);
+
+  //  Change the profilePhoto field in the DB
+  user.profilePhoto = {
+    url : result.secure_url,
+    public_Id : result.public_id
+  }
+
+  await user.save();
+  // 7. Send response to client
+
+
+}
+
+const token =  generateAuthToken(user._id , user.name , user.lastName , user.email , user.isAdmin , user.isBlocked);
 
 res
 .cookie("access_token", token , {
@@ -61,7 +89,14 @@ createdUser : {
   lastName : user.lastName ,
   email : user.email ,
   isAdmin : user.isAdmin,
-  profilePhoto : user.profilePhoto
+  profilePhoto : user.profilePhoto,
+  phoneNumber : user.phoneNumber,
+  address : user.address,
+  country : user.country,
+  zipCode : user.zipCode,
+  city  :user.city,
+  state : user.state,
+  isBlocked : user.isBlocked,
 }
 });
  })
@@ -102,7 +137,7 @@ let cookieParam = {
 if (doNotLogout) {
   cookieParam = {...cookieParam , maxAge : 1000 * 60 * 60 * 24 * 7}
 }
-const token =  generateAuthToken(user._id , user.name , user.lastName , user.email , user.isAdmin);
+const token =  generateAuthToken(user._id , user.name , user.lastName , user.email , user.isAdmin , user.isBlocked);
 
 
 res.cookie("access_token" , token , cookieParam ).status(200).json({success: "user logged in successfully" , 
@@ -112,7 +147,14 @@ loggedUser :  {
   lastName : user.lastName ,
   email : user.email ,
   isAdmin : user.isAdmin,
-  profilePhoto : user.profilePhoto ,
+  profilePhoto : user.profilePhoto,
+  phoneNumber : user.phoneNumber,
+  address : user.address,
+  country : user.country,
+  zipCode : user.zipCode,
+  city  :user.city,
+  state : user.state,
+  isBlocked : user.isBlocked,
   doNotLogout
 }
 })
@@ -148,6 +190,13 @@ if (req.body.password && req.body.password != user.password) {
       lastName : user.lastName ,
       email : user.email ,
       isAdmin : user.isAdmin,
+      profilePhoto : user.profilePhoto,
+      phoneNumber : user.phoneNumber,
+      address : user.address,
+      country : user.country,
+      zipCode : user.zipCode,
+      city  :user.city,
+      state : user.state
 
     }})
  })
@@ -249,6 +298,9 @@ await product.save();
   {
     return res.status(400).json({message : "no file provided"});
   }
+  
+  const file = formatImage(req.file);
+
 
     //  Get the user from DB
     const user = await UserModel.findById(req.user._id);
@@ -258,7 +310,7 @@ await product.save();
   }
 
   // upload the photo to cloudinary
-  const result = await cloudinaryUploadImage(req.file.path);
+  const result = await cloudinaryUploadImage(file);
 
   //  Change the profilePhoto field in the DB
   user.profilePhoto = {
@@ -269,7 +321,14 @@ await product.save();
   await user.save();
   // 7. Send response to client
   res.status(201).json({message : "your profile photo uploaded successfully",
-  profilePhoto : {url : result.secure_url , publicId : result.public_id}
+  loggedUser :  {
+    _id : user._id ,
+    name : user.name ,
+    lastName : user.lastName ,
+    email : user.email ,
+    isAdmin : user.isAdmin,
+    profilePhoto : user.profilePhoto ,
+  }
 });
  })
 
@@ -281,7 +340,7 @@ await product.save();
  * @access  private -- admin 
  ----------------------------------------*/
  exports.getUser = asyncHandler(async (req , res) => {
-  const user = await UserModel.findById(req.params.id).select("name lastName email isAdmin profilePhoto");
+  const user = await UserModel.findById(req.params.id).select("name lastName email isAdmin profilePhoto isBlocked");
 
   if (!user) {
     return  res.status(400).json("user not found");
@@ -326,6 +385,82 @@ await product.save();
     return  res.status(400).json("user not found");
   }
 
+  if (user.profilePhoto.public_Id !== null) 
+  {
+     await cloudinaryRemoveImage(user.profilePhoto.public_Id);
+  }
+
 await UserModel.findByIdAndDelete(req.params.id);
   res.status(200).json("user deleted");
  });
+
+
+      /**---------------------------------------
+ * @desc     get Token
+ * @route   /api/v1/users/auth/get-token
+ * @method  GET
+ * @access public
+ ----------------------------------------*/
+ exports.getToken = async (req , res) => {
+
+  const token = req.cookies.access_token;
+if (!token) {
+  return  res.status(403).json("token is required for the authentication");
+}
+
+  try {
+    const decoded = jwt.verify(token , process.env.JWT_SECRET_KEY);
+    return  res.json({token : decoded.name , isAdmin : decoded.isAdmin , isBlocked : decoded.isBlocked})
+  } catch (error) {
+    return res.status(401).json("unauthorized invalid token");
+  }
+ }
+
+
+       /**---------------------------------------
+ * @desc     logOut
+ * @route   /api/v1/users/logout
+ * @access public
+ ----------------------------------------*/
+ exports.logOut = async (req , res) => {
+if (!req.cookies.access_token) {
+  return  res.status(400).json("you are already log out");
+}
+  try {
+res.clearCookie("access_token").json("acces token cleared");
+  } catch (error) {
+    return  res.status(400).json("there is error");
+  }
+ }
+
+
+      /**---------------------------------------
+ * @desc     toggle block user 
+ * @route   /api/v1/users/toggle-block/:id
+ * @method  PUT
+ * @access  private -- admin 
+ ----------------------------------------*/
+ exports.toggleBlockUser  = asyncHandler(async (req , res) => {
+  const user = await UserModel.findById(req.params.id);
+  if (!user) {
+    return  res.status(400).json("user not found");
+  }
+  if (user.isAdmin) {
+    return  res.status(400).json("you can.t Block Admin user");
+  }
+
+
+  if (user.isBlocked) {
+   user.isBlocked = false;
+
+   await user.save();
+
+   res.status(200).json("user Not Blocked");
+  } else {
+    user.isBlocked = true;
+
+    await user.save();
+
+    res.status(200).json("user Blocked");
+  }
+ })

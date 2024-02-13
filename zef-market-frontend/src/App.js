@@ -23,31 +23,40 @@ import HeaderComponent from "./components/HeaderComponent";
 import FooterComponent from "./components/FooterComponent";
 import RoutesWithUserChatComponent from "./components/user/RoutesWithUserChatComponent";
 import ScrollToTop from "./utils/ScrollToTop";
+import UserUpdateProfilePhoto from "./pages/user/UserUpdateProfilePhoto";
+import AdminUpdateProfilePhoto from "./pages/admin/AdminUpdateProfilePhoto";
+import AdminCreateCategory from "./pages/admin/AdminCreateCategory";
+import { ToastContainer } from "react-toastify";
+
 
 
 function App() {
   return (
 <BrowserRouter>
 <ScrollToTop/>
+<ToastContainer theme={"colored"} position={"top-center"}/>
 <HeaderComponent/>
   <Routes>
-  <Route element={<RoutesWithUserChatComponent/>}> 
+  {/* <Route element={<RoutesWithUserChatComponent/>}>  */}
       {/* public routes  */}
       <Route path="/"  element={<HomePage/>}/>
     <Route path="/product-list"  element={<ProductListPage/>}/>
-    <Route path="/product-details"  element={<ProductDetailsPage/>}/>
-    <Route path="/cart"  element={<CartPage/>}/>
+    <Route path="/product-list/category/:categoryId"  element={<ProductListPage/>}/>
+    <Route path="/product-details/:id"  element={<ProductDetailsPage/>}/>
+    
     <Route path="/login"  element={<LoginPage/>}/>
     <Route path="/register"  element={<RegisterPage/>}/>
     <Route path="*"  element={"page not found"}/>
-  </Route>
-
+  {/* </Route> */}
+  UserUpdateProfilePhoto
   {/* user protected routes  */}
   <Route element={<ProtectedRoutesComponent admin={false}/>}>
   <Route path="/user"  element={<UserProfilePage/>}/>
+  <Route path="/user/UpdateProfilePhoto"  element={<UserUpdateProfilePhoto/>}/>
     <Route path="/user/my-orders"  element={<UserOrdersPage/>}/>
     <Route path="/user/cart-details"  element={<UserCartDetalsPage/>}/>
-    <Route path="/user/order-details"  element={<UserOrderDetaisPage/>}/>
+    <Route path="/user/order-details/:id"  element={<UserOrderDetaisPage/>}/>
+    <Route path="/cart"  element={<CartPage/>}/>
   </Route>
 
     {/* admin protected routes  */}
@@ -61,6 +70,8 @@ function App() {
   <Route path="/admin/order-details/:id"  element={<AdminOrderDetailsPage/>}/>
   <Route path="/admin/chats"  element={<AdminChatsPage/>}/>
   <Route path="/admin/analytics"  element={<AdminAnalyticsPage/>}/>
+  <Route path="/admin/UpdateProfilePhoto"  element={<AdminUpdateProfilePhoto/>}/>
+  <Route path="/admin/createcategory"  element={<AdminCreateCategory/>}/>
 
   </Route>
 

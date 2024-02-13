@@ -1,26 +1,14 @@
 import { Col, Container, Row } from "react-bootstrap";
 import CategoryCardComponent from "../components/CategoryCardComponent";
 import ProductCarouselComponent from "../components/ProductCarouselComponent";
+import HomePageComponent from "./components/HomePageComponent";
+import { useSelector } from "react-redux";
 
 const HomePage = () => {
 
-  const categories = ["tablets" , "laptops" , "cameras" , "mobiles" , "Books" , "Clothes"]
+  const {categories} = useSelector(state => state.getCategories);
   return (
-    <>
-    <ProductCarouselComponent/>
-    <Container>
-
-  
-    <Row xs={1} md={2} className="g-4 mt-5">
-
-
-
-    {categories.map((category , index) => 
-      <CategoryCardComponent category={category} index={index} key={index}/>
-    )}
-    </Row>
-    </Container>
-    </>
+<HomePageComponent categories={categories}/>
   )
 }
 

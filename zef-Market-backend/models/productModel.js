@@ -15,15 +15,15 @@ const productSchema = new mongoose.Schema({
     type : String,
     required : true,
   },
-  category : {
-    type : String,
-    required : true,
-  },
   // category : {
-  //   type : mongoose.Schema.Types.ObjectId,
-  //   ref : "Category",
+  //   type : String,
   //   required : true,
   // },
+  category : {
+    type : mongoose.Schema.Types.ObjectId,
+    ref : "Category",
+    required : true,
+  },
   count : {
     type : Number,
     required : true,
@@ -42,15 +42,29 @@ const productSchema = new mongoose.Schema({
     type : Number,
     default : 0,
   }, 
-  atrrs : [
+  attrs : [
     {key : {type : String} , value : {type : String}}
   ],
   images : [],
   
   reviews : [
     {
-      type : mongoose.Schema.Types.ObjectId,
-      ref : ReviewModel
+      comment : {
+        type : String ,
+        required : true
+      },
+      rating : {
+        type : Number ,
+        required : true
+      },
+      user : {
+        userId : String,
+        name : String,
+        lastName : String,
+        profilePhoto : Object
+      } , 
+      createdAt :Date,
+    
     }
   ],
 } , {timestamps : true});

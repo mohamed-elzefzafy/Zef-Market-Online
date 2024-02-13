@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Col, Row, Table } from 'react-bootstrap';
+import { Button, Col, Image, Row, Table } from 'react-bootstrap';
 import AdminLinksComponent from '../../../components/admin/AdminLinksComponent';
 import { LinkContainer } from 'react-router-bootstrap';
+import { useDispatch } from 'react-redux';
+import { logOut } from '../../../redux/actions/userActions';
 
 const ProductsPageComponent = ({fetchProducts , deleteProduct}) => {
+  const dispatch = useDispatch();
 const [products, setProducts] = useState([]);
 const [productDeleted, setProductDeleted] = useState(false);
 
@@ -22,8 +25,7 @@ const [productDeleted, setProductDeleted] = useState(false);
 
   useEffect(() => {
     fetchProducts().then(res => setProducts(res)).catch((error) =>
-    console.log(
-      error.response.data.message ? error.response.data.message : error.response.data)
+  dispatch(logOut())
     );
   },[productDeleted])
 
@@ -53,9 +55,9 @@ const [productDeleted, setProductDeleted] = useState(false);
     {products?.map((product , index) => 
     <tr key={product?._id}>
             <td>{index + 1}</td>
-            <td>{product?.name}</td>
+            <td>{product?.name}  <Image width="30px" height="30px" className="rounded-circle ms-4" src={product?.images[0]?.url} alt="productPhoto" /> </td>
             <td>{product?.price}</td>
-            <td>{product?.category}</td>
+            <td>{product?.category?.name}</td>
             <td>
             <LinkContainer to={`/admin/edit-product/${product?._id}`}>
               <Button className="btn-sm">

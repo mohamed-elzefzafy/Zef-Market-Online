@@ -17,15 +17,25 @@ app.use(express.json());
 app.use(cookieParser());
 
   // enable other domains accsess the app
-  app.use(cors());
-  app.options("*" , cors());
+  // app.use(cors());
+  // app.options("*" , cors());
+
+  app.use(
+    cors({
+      credentials: true,
+      origin: process.env.FRONT_URL
+    })
+  );
 
 
   // app.use(cors({
   //   origin : process.env.FRONT_URL
   // }));
 
-  
+  // app.use(cors({
+  //   origin : "http://localhost:3000"
+  // }));
+
 
 app.get("/", async (req, res) => {
   res.send("Zef Market Api is running....");

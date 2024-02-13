@@ -3,9 +3,11 @@ import { Alert, Button, Col, Container, Form, Row, Spinner } from "react-bootstr
 import { Link } from "react-router-dom";
 
 
-const LoginPageComponent = ({loginUserApiRequest}) => {
+const LoginPageComponent = ({loginUserApiRequest , dispatch , setReduxUserState }) => {
   const [validated, setValidated] = useState(false);
+  const [loginUserRsponseState, setLoginUserRsponseState] = useState({succes : "" , error : "" , loading : false});
 
+  
   const handleSubmit = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -17,9 +19,20 @@ const LoginPageComponent = ({loginUserApiRequest}) => {
     const doNotLogout = form.doNotLogout.checked;
 
     if (event.currentTarget.checkValidity() === true && email && password) {
-loginUserApiRequest(email, password , doNotLogout).then(res => console.log(res)).catch((error) =>
-console.log(
-  error.response.data.message ? error.response.data.message : error.response.data)
+      setLoginUserRsponseState({loading : true})
+loginUserApiRequest(email, password , doNotLogout).then(res => {  
+  setLoginUserRsponseState({succes : res.success , loading : false});
+
+  if (res.loggedUser) {
+    dispatch(setReduxUserState(res.loggedUser))
+  }
+if (res.success === "user logged in successfully" && res.loggedUser.isAdmin)
+   window.location.href = "/admin/orders"
+ else if (res.success === "user logged in successfully" && !res.loggedUser.isAdmin)
+ window.location.href ="/user"
+}).catch((error) =>
+  setLoginUserRsponseState({error :   error?.response?.data?.message ? error?.response?.data?.message : error?.response?.data})
+  
 );
     }
 
@@ -53,7 +66,7 @@ console.log(
       </Form.Group>
 
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
+      <Form.Group className="mb-3" controlId="formBasicCheckbox">
         <Form.Check
           type="checkbox"
           name="doNotLogout"
@@ -70,15 +83,19 @@ console.log(
       </Row>
     
     <Button variant="primary" type="submit">
-    <Spinner
+{loginUserRsponseState && loginUserRsponseState.loading === true ? (   
+  <Spinner
+        className='me-1'
         as="span"
         animation="border"
         size="sm"
         role="status"
         aria-hidden="true"
-      />
+      />) : ("")}
     Login</Button>
-    <Alert className="mt-2" variant="danger" show={true}>Wrong Inputs</Alert>
+    <Alert className="mt-2" variant="danger" 
+    show={loginUserRsponseState && loginUserRsponseState.error === "wrong email or password"}>
+    Wrong Inputs</Alert>
   </Form>
     </Col>
     </Row>

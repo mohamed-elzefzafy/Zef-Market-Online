@@ -3,33 +3,33 @@ import { LinkContainer } from "react-router-bootstrap";
 import { Link } from "react-router-dom";
 import { Rating } from "react-simple-star-rating";
 
-const ProductForListComponent = ({index , images}) => {
+const ProductForListComponent = ({index , images  , name , description , price , rating , reviewsNumber , productId}) => {
   return (
     <Card style={{ marginTop : "30px" , marginBottom : "50px" , flexDirection : "row"}}>
     <Row>
       <Col  lg={5}>
-      <Card.Img variant="top" src={"/images/" + images[index] + "-category.png"} />
+      <Card.Img variant="top" style={{objectFit : "scale-down"}} width="300px" height="300px" src={images[0].url} />
       </Col>
 
       <Col  lg={7}>
       <Card.Body>
-        <Card.Title>Product Name lorem </Card.Title>
+        <Card.Title>{name} </Card.Title>
         <Card.Text>
 
-        Product decription Some quick example text to build on the card title and make up the
-          bulk of the card's content.
+      {description}
         </Card.Text>
         <Card.Text >
-          <Rating readonly size={20} initialValue={5}/>  <b>(1)</b>
+
+          <Rating readonly size={20} initialValue={rating}/> ({reviewsNumber})
         </Card.Text>
         <Card.Text className="h4">
-          150$ {" "}
-          {/* <LinkContainer to={`/product-details`}> */}
+          {price}$ {" "}
+          <LinkContainer to={`/product-details/${productId}`}>
           <Link to="/product-details">
           <Button variant="danger">See Product</Button>
           </Link>
         
-          {/* </LinkContainer> */}
+          </LinkContainer>
         </Card.Text>      
       </Card.Body>
       </Col>

@@ -3,17 +3,19 @@ import CartItemComponent from "../../../components/CartItemComponent"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import request from './../../../utils/request';
+import { useDispatch } from "react-redux";
+import { logOut } from "../../../redux/actions/userActions";
 
 
 const OrderDetailsPageComponent = ({getOrder , markAsDeliver}) => {
+  const dispatch = useDispatch();
 const [orderDetails, setOrderDetails] = useState();
 const [updateDeliver, setUpdateDeliver] = useState(false);
 const {id} = useParams();
   useEffect(() => {
 getOrder(id).then((order) => setOrderDetails(order)).catch((error) =>
-console.log(
-  error.response.data.message ? error.response.data.message : error.response.data)
-);},[orderDetails?.isDelivered , id , updateDeliver])
+dispatch(logOut()))
+},[orderDetails?.isDelivered , id , updateDeliver])
 
 const updateToDeliver =  async (id) => {
 await markAsDeliver(id);

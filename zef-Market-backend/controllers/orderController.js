@@ -11,9 +11,12 @@ const objectId = require("mongodb").ObjectId;
  ----------------------------------------*/
  exports.getUserOrders = asyncHandler(async (req , res) => {
   const orders = await OrderModel.find({user : new objectId(req.user._id)});
-  if (orders.length == 0) {
+  // .populate("user" , "-_id -email -profilePhoto -password -isAdmin -createdAt");
+
+  if (!orders) {
     return  res.status(400).json("there is no orders for this user");
   }
+
   res.status(200).json(orders);
 
  })

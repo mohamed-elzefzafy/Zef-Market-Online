@@ -1,42 +1,18 @@
-import { Button, Col, Container, ListGroup, Row } from "react-bootstrap";
-import SortOptionsComponent from './../components/SortOptionsComponent';
-import PriceFilterComponent from './../components/filterQueryResultOptions/PriceFilterComponent';
-import RatingFilterComponent from './../components/filterQueryResultOptions/RatingFilterComponent';
-import CategoryFilterComponent from './../components/filterQueryResultOptions/CategoryFilterComponent';
-import AttributesFilterComponent from './../components/filterQueryResultOptions/AttributesFilterComponent';
-import ProductForListComponent from './../components/ProductForListComponent';
-import PaginationComponent from './../components/PaginationComponent';
+import { useParams } from "react-router-dom";
+import request from "../utils/request";
+import ProductListPageComponent from "./components/ProductListPageComponent";
+import { useSelector } from "react-redux";
 
+const getProducts = async() => {
+  const {data} = await request.get("/api/v1/products");
+    return data
+}
 
 const ProductListPage = () => {
-
+  const {categories} = useSelector(state => state.getCategories);
+  
   return (
-    <Container fluid>
-    <Row>
-      <Col md={3}>
-        <ListGroup variant="flush">
-          <ListGroup.Item className="mb-3 mt-3"><SortOptionsComponent /></ListGroup.Item>
-          <ListGroup.Item> FILTER :<br/>  <PriceFilterComponent /></ListGroup.Item>
-          <ListGroup.Item><RatingFilterComponent /></ListGroup.Item>
-          <ListGroup.Item>  <CategoryFilterComponent /></ListGroup.Item>
-          <ListGroup.Item>
-            <AttributesFilterComponent />
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <Button variant="primary" className="me-1">Filter</Button>
-            <Button variant="danger">Reset filter</Button>
-          </ListGroup.Item>
-        </ListGroup>
-      </Col>
-      <Col md={9}>
-      {Array.from({length : 5}).map((_, index) =>
-      <ProductForListComponent key={index} index={index} images={ ["games", "monitors", "tablets", "games", "monitors"]}/>
-       )}
-        
-        <PaginationComponent />
-      </Col>
-    </Row>
-  </Container>
+<ProductListPageComponent getProducts={getProducts} categories={categories}/>
   )
 }
 

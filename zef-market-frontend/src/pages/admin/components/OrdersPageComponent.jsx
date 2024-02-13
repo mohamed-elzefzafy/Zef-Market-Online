@@ -2,14 +2,17 @@ import { Col, Row, Table } from "react-bootstrap"
 import AdminLinksComponent from "../../../components/admin/AdminLinksComponent"
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
+import { useDispatch } from "react-redux"
+import { logOut } from "../../../redux/actions/userActions"
 
 
 const OrdersPageComponent = ({getOrders}) => {
+  const dispatch = useDispatch();
+  
 const [orders, setOrders] = useState([]);
   useEffect(() => {
 getOrders().then(res => setOrders(res)).catch((error) =>
-console.log(
-  error.response.data.message ? error.response.data.message : error.response.data)
+dispatch(logOut())
 );
   },[])
   return (
@@ -34,7 +37,7 @@ console.log(
         <tbody>
     
     {orders?.map((order , index) => 
-    <tr>
+    <tr key={index}>
             <td>{index + 1}</td>
             <td>{order?.user?.name} {order?.user?.lastName}</td>
             <td>{order?.createdAt.substring(0 , 10)}</td>

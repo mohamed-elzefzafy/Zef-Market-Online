@@ -18,7 +18,8 @@ default : {
 }
 },
 password : {type : String , required : true },
-isAdmin : {type : Boolean , required : true , default : false}
+isAdmin : {type : Boolean , required : true , default : false},
+isBlocked : {type : Boolean , required : true , default : false}
 } , {timestamps: true});
 
 const UserModel = mongoose.model("User", UserSchema);
