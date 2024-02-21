@@ -44,4 +44,10 @@ deliverdAt : {type : Date},
   
   const OrderModel =  mongoose.model("Order" , OrderSchema);
 
+  OrderModel.watch().on("change", (data) => {
+    console.log(data);
+    if (data.operationType === "insert") {
+      io.emit("newOrder", data.fullDocument);
+  }
+  })
   module.exports = OrderModel;

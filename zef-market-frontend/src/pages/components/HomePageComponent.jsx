@@ -5,10 +5,11 @@ import CategoryCardComponent from '../../components/CategoryCardComponent'
 import { useSelector } from 'react-redux'
 
 const HomePageComponent = ({categories}) => {
-  
+  const {bestSellerProducts} = useSelector(state => state.products)
+  console.log(bestSellerProducts);
   return (
     <>
-    <ProductCarouselComponent/>
+    <ProductCarouselComponent bestSellerProducts={bestSellerProducts}/>
     <Container>
 
   
@@ -17,7 +18,7 @@ const HomePageComponent = ({categories}) => {
 
 
     {categories?.map((category , index) => 
-      <CategoryCardComponent category={category} index={index} key={index}/>
+      <CategoryCardComponent  category={category} index={index} key={index}/>
     )}
     </Row>
     </Container>

@@ -1,5 +1,21 @@
 import request from "../../utils/request";
-import { CREATE_PRODUCT, GET_ONE_PRODUCT } from "../constants";
+import { CREATE_PRODUCT, GET_ALL_PRODUCTS, GET_BEST_SELLER_PRODUCTS, GET_ONE_PRODUCT } from "../constants";
+
+
+
+export const getAllProductsAction = (categoryId  , pageNumParam  , searchQuery  , filters , sortOption) => async(dispatch) => {
+
+  const {data} = await request.get("/api/v1/products");
+  dispatch({
+    type :GET_ALL_PRODUCTS,
+    payLoad : data?.products
+  })
+  return data;
+}
+
+
+
+
 
 
 export const getOneProduct = (id) => async(dispatch) => {
@@ -61,3 +77,18 @@ export const deleteProductImage = (id , publicId) => async(dispatch) => {
     payLoad : data
   })
 }
+
+export const getBestSellerProducts = () => async(dispatch) => {
+try {
+  const {data} = await request.get(`/api/v1/products/bestseller`);
+  dispatch({
+    type : GET_BEST_SELLER_PRODUCTS,
+    payLoad : data
+  })
+} catch (error) {
+  console.log(error.response.data);
+}
+
+  // return data;
+}
+

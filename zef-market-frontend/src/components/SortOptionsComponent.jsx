@@ -1,8 +1,8 @@
 import { Form } from "react-bootstrap";
 
-const SortOptionsComponent = () => {
+const SortOptionsComponent = ({setSortOption}) => {
   return (
-    <Form.Select aria-label="Default select example">
+    <Form.Select aria-label="Default select example" onChange={(e) => setSortOption(e.target.value)}>
       <option>SORT BY</option>
       <option value="price_1">Low To High</option>
       <option value="price_-1">High To Low</option>

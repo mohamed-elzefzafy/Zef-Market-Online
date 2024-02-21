@@ -3,7 +3,8 @@ import { LinkContainer } from "react-router-bootstrap";
 import { Link } from "react-router-dom";
 import { Rating } from "react-simple-star-rating";
 
-const ProductForListComponent = ({index , images  , name , description , price , rating , reviewsNumber , productId}) => {
+const ProductForListComponent = ({index , images  , name , description , 
+  price , rating , reviewsNumber , productId , reviewsLength}) => {
   return (
     <Card style={{ marginTop : "30px" , marginBottom : "50px" , flexDirection : "row"}}>
     <Row>
@@ -20,7 +21,8 @@ const ProductForListComponent = ({index , images  , name , description , price ,
         </Card.Text>
         <Card.Text >
 
-          <Rating readonly size={20} initialValue={rating}/> ({reviewsNumber})
+          <Rating readonly size={20} initialValue={rating}/> <br />
+           <b className="text-danger mt-2">({reviewsLength +  " " + "Reviews"})</b>  {rating && <b>Rating : <span className="text-danger">{rating}</span></b>}
         </Card.Text>
         <Card.Text className="h4">
           {price}$ {" "}

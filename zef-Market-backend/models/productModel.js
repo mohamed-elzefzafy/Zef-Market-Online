@@ -69,6 +69,15 @@ const productSchema = new mongoose.Schema({
   ],
 } , {timestamps : true});
 
+
+productSchema.pre(/^aggregate/ , function (next) {
+  this.populate({
+    path : "category" ,
+    select :  "name"
+  })
+  next();
+})
+
 const ProductModel = mongoose.model("Product" , productSchema);
 
 productSchema.index({name : "text", description : "text"} , {name : "textIndex"});

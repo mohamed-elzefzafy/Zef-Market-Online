@@ -1,21 +1,30 @@
 import { Pagination } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 
-const PaginationComponent = () => {
+const PaginationComponent = ({paginationLinksNumber , pageNumber , categoryId , searchQuery}) => {
+  const category = categoryId ? `category/${categoryId}/` : "";
+  const search = searchQuery ? `search/${searchQuery}/` : "";
+  const url = `/product-list/${category}${search}`
   return (
     <Pagination>
-      <Pagination.Prev />
-      <Pagination.Item>{1}</Pagination.Item>
-  
+    <LinkContainer to={`${url}${pageNumber - 1}`}>
+    <Pagination.Prev disabled={pageNumber === 1}/>
+    </LinkContainer>
+    
+  { 
+     [...Array(paginationLinksNumber).keys()]?.map((page , index) =>  
+     <LinkContainer key={page + 1} to={`${url}${page + 1}`}>
+      <Pagination.Item >{page + 1}</Pagination.Item>
+      </LinkContainer>
+      
+     )
 
-      <Pagination.Item>{10}</Pagination.Item>
-      <Pagination.Item>{11}</Pagination.Item>
-      <Pagination.Item active>{12}</Pagination.Item>
-      <Pagination.Item>{13}</Pagination.Item>
-      <Pagination.Item >{14}</Pagination.Item>
+  }
+     <LinkContainer to={`${url}${pageNumber + 1}`}>
+     <Pagination.Next disabled={pageNumber === paginationLinksNumber}/>
+     </LinkContainer>
 
-
-      <Pagination.Item>{20}</Pagination.Item>
-      <Pagination.Next/>
+    
     </Pagination>
   );
 };

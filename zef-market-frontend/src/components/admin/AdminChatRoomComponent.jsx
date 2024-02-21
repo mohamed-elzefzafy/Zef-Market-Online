@@ -2,13 +2,14 @@ import { Fragment, useState } from "react";
 import { Button, Form, Toast, ToastBody, ToastHeader } from "react-bootstrap";
 
 
-const AdminChatRoomComponent = () => {
+const AdminChatRoomComponent = ({chatRoom}) => {
   const [show1, setShow1] = useState(true);
   const [show2, setShow2] = useState(true);
 
   const toggleShowA = () => setShow1(false);
   const toggleShowB = () => setShow2(false);
 
+  console.log(chatRoom);
   return (
   <>
     <Toast show={show1} onClose={toggleShowA} className="ms-4 mb-5" style={{height : "fit-content"}}>

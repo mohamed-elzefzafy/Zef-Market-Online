@@ -1,3 +1,5 @@
+const {createServer} = require("http");
+const { Server} = require("socket.io");
 const path = require("path");
 const cors = require("cors");
 require("dotenv").config({path : "./config.env"});
@@ -9,12 +11,21 @@ const mountRoutes = require("./routes/indexMountRoutes");
 const ProductModel = require("./models/productModel");
 const cookieParser = require("cookie-parser");
 
-
+const httpServer = createServer(app);
+global.io = new Server(httpServer);
 
 connectDb();
 
 app.use(express.json());
 app.use(cookieParser());
+
+io.on("connection" , (socket) => {
+  socket.on("client sends message" , (msg) => {
+socket.broadcast.emit("server sends message from client to server" , {
+  message : msg
+})
+  })
+})
 
   // enable other domains accsess the app
   // app.use(cors());
@@ -67,7 +78,7 @@ app.use((error , req , res , next) => {
 
 const port = process.env.PORT || 8000 ;
 
-app.listen(port , ()=> {
+httpServer.listen(port , ()=> {
   console.log(`server is running on port ${port}`);
 })
 

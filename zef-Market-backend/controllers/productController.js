@@ -30,42 +30,77 @@ if (req.query.rating) {
 }
 
 let categoryQueryCondition = {}; 
-const productCategory = req.params.categoryId || "";
+// const productCategory = req.params.categoryId || "";
 
-if (productCategory) {
-  queryCondition = true;
-let a = productCategory.replace("," , "/");
-var regEx = new RegExp("^" + a)
-  categoryQueryCondition = { category : regEx };
-}
+// if (productCategory) {
+//   queryCondition = true;
+// let a = productCategory.replace("," , "/");
+// var regEx = new RegExp("^" + a)
+//   categoryQueryCondition = { category : regEx };
+// }
 
 
 if (req.query.category) {
   queryCondition = true;
-let a = req.query.category.split(",").map((item) => {
-  if (item) return new RegExp("^" + item)
-})
-  categoryQueryCondition = { category : {$in : a} };
+// let a = req.query.category.split(",").map((item) => {
+//   if (item) return new RegExp("^" + item)
+// })
+console.log(req.query.category);
+  categoryQueryCondition = { category : req.query.category };
 }
 
 let attrsQueryCondition = []; 
 if (req.query.attrs) {
-  queryCondition = true;
   attrsQueryCondition = req.query.attrs.split(",").reduce((acc , item) => {
   if (item) {
   let a = item.split("-")
   let values = [...a];
   values.shift();
   let a1 = {
-    atrrs : {$elemMatch : {key : a[0] , value : {$in : values }}}
+    attrs : {$elemMatch : {key : a[0] , value : {$in : values }}}
+  
   }
 acc.push(a1);
 return acc;
   } else {
     return acc
   }
-  } , [])
+  } , []);
+  queryCondition = true;
 }
+
+
+
+
+////////////////////////////////
+// let attrsQueryCondition = [];
+// if (req.query.attrs) {
+//   // attrs=RAM-1TB-2TB-4TB,color-blue-red
+//   // [ 'RAM-1TB-4TB', 'color-blue', '' ]
+//   attrsQueryCondition = req.query.attrs.split(",").reduce((acc, item) => {
+//     if (item) {
+//       let a = item.split("-");
+//       let values = [...a];
+//       values.shift(); // removes first item
+//       let a1 = {
+//         attrs: { $elemMatch: { key: a[0], value: { $in: values } } },
+//       };
+//       acc.push(a1);
+//       // console.dir(acc, { depth: null })
+//       return acc;
+//     } else return acc;
+//   }, []);
+//   //   console.dir(attrsQueryCondition, { depth: null });
+//   queryCondition = true;
+// }
+////////////////////////////////
+
+
+
+
+
+
+
 
 
     //pagination
@@ -107,6 +142,7 @@ if (queryCondition) {
   const skiped = (pageNum - 1) *  recordsPerPage;
   const totalProducts = await ProductModel.countDocuments(query);
   const products = await ProductModel.find(query).skip(skiped).sort(sort).limit(recordsPerPage).select(select);
+  
 
   res.status(200).json({products , pageNum ,  pageLinksNumber : Math.ceil(totalProducts / recordsPerPage)})
  })
@@ -128,7 +164,7 @@ if (queryCondition) {
   res.status(200).json(product);
  })
 
-
+ 
    /**---------------------------------------
  * @desc    get Best Sellers
  * @route   /api/v1/products/bestseller
@@ -145,9 +181,10 @@ if (queryCondition) {
     {$limit : 3}
   ])
 
+  await CategoryModel.populate(products, {path: "category" , select : "name"});
   res.status(200).json(products);
- })
-
+ });
+ 
 
   /**---------------------------------------
  * @desc    get products for Admin
@@ -189,6 +226,7 @@ if (product.images.length > 0) {
    })
 
 
+
       /**---------------------------------------
  * @desc    create Product for Admin
  * @route   /api/v1/products/admin
@@ -200,7 +238,6 @@ if (product.images.length > 0) {
   if (!name || !description || !count || !price  || !category) {
     return  res.status(400).json(`complete product fields`);
   }
-
   // if (!req.files) {
   //   return  res.status(400).json(`one image at least forproduct is required`);
   // }
@@ -219,8 +256,6 @@ product.description = description;
 product.count = count;
 product.price = price;
 product.category = category;
-
-
 
 if (attrKey !== null  && attrValue != null && attrKey !== "" && attrValue !== "") 
 {
@@ -368,6 +403,8 @@ if (product.images.length === 0)
 {
   return  res.status(400).json(`one image at least for product is required`);
 }
+
+
 await product.save();
 
 // end 

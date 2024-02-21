@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react"
 import { Col, Row, Table } from "react-bootstrap"
+import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
+import { getUserOrders } from "../../../redux/actions/orderAction"
 
 
-const UserOrdersPageComponent = ({getOrders}) => {
+const UserOrdersPageComponent = () => {
+  const dispatch = useDispatch();
+  const {alluserOrders} = useSelector(state => state.orders);
   const [orders, setOrders] = useState([]);
   useEffect(() => {
-    getOrders().then((res => setOrders(res)));
+    dispatch(getUserOrders());
   })
   return (
     <Row className="mt-5">
@@ -25,7 +29,7 @@ const UserOrdersPageComponent = ({getOrders}) => {
         </thead>
         <tbody>
     
-    {orders?.map((order , index) => 
+    {alluserOrders?.map((order , index) => 
     <tr key={index}>
             <td>{index + 1}</td>
             <td>You</td>

@@ -113,11 +113,10 @@ setReviedMsg(false);
     
               <ListGroup variant="flush">
           <ListGroup.Item> <h1>{oneProduct?.name}</h1></ListGroup.Item> 
-          <ListGroup.Item> <Rating readonly initialValue={oneProduct?.rating} size={20}/> ({oneProduct?.reviews?.length}) </ListGroup.Item>
+          <ListGroup.Item> <Rating readonly initialValue={oneProduct?.rating} size={20}/>    <b className="text-danger mt-2">({oneProduct?.reviews?.length +  " " + "Reviews"})</b>  <br /> <b>Rating : <span className="text-danger">{oneProduct?.rating}</span></b> </ListGroup.Item>
           <ListGroup.Item> Price : <span className="fw-bold">{oneProduct?.price}$</span></ListGroup.Item>
           <ListGroup.Item> {oneProduct?.description}</ListGroup.Item>
         </ListGroup>
-              
               </Col>
               <Col md={4}>
               
@@ -127,13 +126,13 @@ setReviedMsg(false);
           <ListGroup.Item>
     
                    Quantity : 
-          {/* <Form.Select disabled={oneProduct?.count < 1 }  value={quantity} onChange={(e) => setQuantity(e.target.value)}  aria-label="Default select example">
+          <Form.Select disabled={oneProduct?.count < 1 }  value={quantity} onChange={(e) => setQuantity(e.target.value)}  aria-label="Default select example">
           <option>{oneProduct?.count < 1 ? "out of Stock" : "Choose"}</option>
           {[...Array(oneProduct?.count).keys()].map(count => 
             <option key={count} value="1">{count + 1}</option>
           )}
     
-        </Form.Select> */}
+        </Form.Select>
 
         <input type="number" disabled={oneProduct?.count < 1 } max={oneProduct?.count} min={1} style={{width : "70px" , outline : "none" , border : "1px solid gray" ,  }} className="ms-2 p-0" />
           </ListGroup.Item>
@@ -149,8 +148,8 @@ setReviedMsg(false);
                 <h5>reviews</h5>
                 <ListGroup variant="flush">
                 { oneProduct?.reviews?.map((review , index) => 
-<>
-<ListGroup.Item key={review?._id}>
+<Fragment key={review?._id}>
+<ListGroup.Item >
                 <h4>{review?.user?.name} {" "} {review?.user?.lastName}</h4>
                 <Image width="40px" height="40px" roundedCircle  src={review?.user?.profilePhoto} className="me-2"/>
                 {/* <br /> */}
@@ -205,7 +204,7 @@ setReviedMsg(false);
 
 {/* model end  */}
                 
-</>
+</Fragment>
                 )}
          </ListGroup>
                 

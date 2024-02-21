@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import { Form } from "react-bootstrap";
 
 const AttributesFilterComponent = ({attrFilter , setAttrsFromFilter , attrsFromFilter}) => {
-  console.log(attrsFromFilter);
+  
+  useEffect(()=> {},[attrFilter])
   return (
     <>
     {attrFilter && attrFilter?.length > 0 && attrFilter?.map((attr , index) => 

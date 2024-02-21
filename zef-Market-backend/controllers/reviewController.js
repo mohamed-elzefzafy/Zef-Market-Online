@@ -43,6 +43,20 @@ const review = {comment , rating ,
 
 product.reviews.push(review);
 
+// await product.save();
+
+let ratingToatal = 0;
+
+product.reviews.forEach(review => {
+ ratingToatal += review.rating
+})
+
+
+ const productRating = (ratingToatal / product.reviews.length);
+
+
+product.rating = productRating;
+
 await product.save();
 
 res.status(200).json(product);
@@ -81,6 +95,23 @@ product = await ProductModel.findByIdAndUpdate({_id :req.params.productId},
   {$pull :{ reviews: {_id : req.query.reviewId}}},
   {new : true}
   )
+
+
+  let ratingToatal = 0;
+
+  product.reviews.forEach(review => {
+   ratingToatal += review.rating
+  })
+  
+  
+   const productRating = (ratingToatal / product.reviews.length);
+  
+  
+  product.rating = productRating;
+  
+  await product.save();
+
+
   res.status(200).json(product);
  })
 
@@ -108,6 +139,22 @@ product = await ProductModel.findByIdAndUpdate({_id :req.params.productId},
   {$pull :{ reviews: {_id : req.query.reviewId}}},
   {new : true}
   )
+
+  let ratingToatal = 0;
+
+  product.reviews.forEach(review => {
+   ratingToatal += review.rating
+  })
+  
+  
+   const productRating = (ratingToatal / product.reviews.length);
+  
+  
+  product.rating = productRating;
+  
+  await product.save();
+
+
   res.status(200).json(product);
  })
 
@@ -137,6 +184,24 @@ review.comment = req.body.comment || review.comment;
 review.rating = req.body.rating || review.rating;
 
 
+
+
+
+ await product.save();
+
+
+ let ratingToatal = 0;
+
+ product.reviews.forEach(review => {
+  ratingToatal += review.rating
+ })
+ 
+ 
+  const productRating = (ratingToatal / product.reviews.length);
+ 
+ 
+ product.rating = productRating;
+ 
  await product.save();
 
   res.status(201).json(product);
