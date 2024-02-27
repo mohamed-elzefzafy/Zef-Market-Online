@@ -30,7 +30,8 @@ app.use(
   cors({
     // credentials: true,
     withCredentials : true,
-    origin: process.env.FRONT_URL
+    // origin: process.env.FRONT_URL
+    origin: "https://zef-market-shop.web.app/"
   })
 );
 
