@@ -22,9 +22,11 @@ global.io = new Server(httpServer);
 
 connectDb();
 
-  // enable other domains accsess the app
-  app.use(cors());
-app.options("*" , cors());
+// cors policy 
+app.use(cors({
+  origin : process.env.FRONT_URL
+}));
+
 
 app.use(express.json());
 app.use(cookieParser());
