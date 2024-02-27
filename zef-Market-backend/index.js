@@ -22,10 +22,12 @@ global.io = new Server(httpServer);
 
 connectDb();
 
-// cors policy 
-app.use(cors({
-  origin : "https://zef-market-shop.web.app"
-}));
+
+
+  // enable other domains accsess the app
+  app.use(cors());
+  app.options("*" , cors());
+
 
 
 app.use(express.json());
