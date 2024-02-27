@@ -24,7 +24,7 @@ connectDb();
 
 // cors policy 
 app.use(cors({
-  origin : process.env.FRONT_URL
+  origin : "https://zef-market-shop.web.app"
 }));
 
 
