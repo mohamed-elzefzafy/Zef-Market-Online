@@ -87,15 +87,15 @@ socket.broadcast.to(targetAdminId).emit("server sends message from client to adm
 })
 
   // enable other domains accsess the app
-  // app.use(cors());
-  // app.options("*" , cors());
+  app.use(cors({credentials: true}));
+  app.options("*" , cors());
 
-  app.use(
-    cors({
-      credentials: true,
-      origin: process.env.FRONT_URL
-    })
-  );
+  // app.use(
+  //   cors({
+  //     credentials: true,
+  //     origin: process.env.FRONT_URL
+  //   })
+  // );
 
 
   // app.use(cors({
