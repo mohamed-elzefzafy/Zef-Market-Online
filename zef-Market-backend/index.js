@@ -22,17 +22,17 @@ global.io = new Server(httpServer);
 
 connectDb();
 
-
-
-  // enable other domains accsess the app
-  app.use(cors());
-  app.options("*" , cors());
-
-
-
 app.use(express.json());
 app.use(cookieParser());
 
+
+app.use(
+  cors({
+    // credentials: true,
+    withCredentials : true,
+    origin: process.env.FRONT_URL
+  })
+);
 
 
 const admins =[];
@@ -95,13 +95,11 @@ socket.broadcast.to(targetAdminId).emit("server sends message from client to adm
 
 })
 
+  // enable other domains accsess the app
+  // app.use(cors());
+  // app.options("*" , cors());
 
-  // app.use(
-  //   cors({
-  //     credentials: true,
-  //     origin: process.env.FRONT_URL
-  //   })
-  // );
+
 
 
   // app.use(cors({
