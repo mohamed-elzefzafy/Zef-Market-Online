@@ -13,8 +13,8 @@ const ProductModel = require("./models/productModel");
 const cookieParser = require("cookie-parser");
 
 app.use(helmet({
-  //   contentSecurityPolicy: false, 
-  // crossOriginEmbedderPolicy: false
+    contentSecurityPolicy: false, 
+  crossOriginEmbedderPolicy: false
 }));
 
 const httpServer = createServer(app);
@@ -22,18 +22,17 @@ global.io = new Server(httpServer);
 
 connectDb();
 
-app.use(express.json());
-app.use(cookieParser());
-
 
 app.use(
   cors({
-    // credentials: true,
-    withCredentials : true,
-    // origin: process.env.FRONT_URL
-    origin: "https://zef-market-shop.web.app/"
+    credentials: true,
+    origin: process.env.FRONT_URL
   })
 );
+
+
+app.use(express.json());
+app.use(cookieParser());
 
 
 const admins =[];
@@ -99,7 +98,6 @@ socket.broadcast.to(targetAdminId).emit("server sends message from client to adm
   // enable other domains accsess the app
   // app.use(cors());
   // app.options("*" , cors());
-
 
 
 
