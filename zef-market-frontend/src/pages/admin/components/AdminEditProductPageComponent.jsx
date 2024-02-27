@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, CloseButton, Col, Container, Form, Image, Row, Table } from "react-bootstrap"
+import {  Button, CloseButton, Col, Container, Form, Image, Row, Table } from "react-bootstrap"
 import { Link, useNavigate, useParams } from "react-router-dom"
-import request from "../../../utils/request";
-import { useSelector } from "react-redux";
 
 
 const AdminEditProductPageComponent = ({categories  , updateProductApiRequest ,
@@ -19,15 +17,13 @@ const AdminEditProductPageComponent = ({categories  , updateProductApiRequest ,
   const [attrKey1, setAttrKey1] = useState();
   const [attrVal1, setAttrVal1] = useState();
 
-  console.log(attrKey.current);
-  console.log(attrVal.current);
+
   const setValFromAtrrFromDbSelectForm = (e) => {
     setAttrKey1(e.target.value);
-    console.log(e.target.value);
+
     if (e.target.value !== "Choose attribute") {
       var selectedAttr = attributesFromDb.find(attribute => attribute.key === e.target.value);
-      console.log(selectedAttr.value);
-      console.log(selectedAttr);
+
       setSelectedAtrrVal(selectedAttr.value);
     }
   }
@@ -98,7 +94,6 @@ const handleFileInputChange = (e) => {
 
 useEffect(() => {
   let categoryEditedProduct = categories.find(category => category?._id === oneProduct?.category?._id);
-  console.log(categoryEditedProduct);
   if (categoryEditedProduct?.attrs?.length > 0) {
     setAttributesFromDb(categoryEditedProduct?.attrs)
   }

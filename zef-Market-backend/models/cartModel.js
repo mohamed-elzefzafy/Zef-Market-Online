@@ -4,7 +4,7 @@ const UserModel = require("./userModel");
 const CartSchema = new mongoose.Schema({
   user : { type : mongoose.Schema.Types.ObjectId , ref : UserModel , required : true},
   orderTotal : {
-    itemsCount : { type : Number , required : true},
+    carItemsLength : { type : Number , required : true},
     cartSubtotal : { type : Number , required : true},
   },
   cartItems : [

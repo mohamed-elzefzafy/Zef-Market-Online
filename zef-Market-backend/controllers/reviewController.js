@@ -18,7 +18,6 @@ const reviews = require("../seeder/reviews");
 const user = await UserModel.findById(req.user._id);
   const existUser = product.reviews.find(review => review.user.userId === req.user._id);
   if (existUser) {
-    console.log(existUser);
     return  res.status(400).json(`your reviewd this product before`);
   }
 
@@ -78,13 +77,6 @@ res.status(200).json(product);
 
 const review = product.reviews.find(review => review.user.userId === req.user._id);
 const reviewId = review?._id.toString();
-// // console.log(typeof reviewId);
-// // console.log(reviewId);
-// if (!review) 
-// {
-//   return  res.status(400).json(`you can't remove review for another user`);
-// }
-
 
 if ( !review || reviewId !== req.query.reviewId) {
   return  res.status(400).json(`select the right review`);

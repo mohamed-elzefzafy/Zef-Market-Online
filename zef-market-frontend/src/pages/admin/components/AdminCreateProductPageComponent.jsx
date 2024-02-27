@@ -35,7 +35,6 @@ const chooseCategory = (e) => {
   const cat = categories.find(c => c._id === e.target.value)
   setCategoryAttrKey(cat.attrs)
 }
-  console.log(e.target.value);
   if (e.target.value === "Choose Category")
   {
     setDisabledAttrField(true)
@@ -87,18 +86,10 @@ setAttrKeyInitialVal(e.target.value);
     }
 
     if (event.currentTarget.checkValidity() === true) {
-      console.log(form.name.value);
-      console.log(form.description.value);
-      console.log(form.count.value);
-      console.log(form.price.value);
-      console.log(form.category.value);
-      console.log(fd);
   const res = await  dispatch(createProduct(fd));
-  console.log(res);
   if ( res && res === "product created")
   {
     navigate("/admin/products");
-    // toast.success("product created successfully");
   }
     }
     setValidated(true);

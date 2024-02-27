@@ -5,8 +5,7 @@ import { useSelector } from "react-redux";
 
 
 const AdminChatsPage = () => {
-  const {chatRooms} = useSelector(state => state.chat);
-  console.log(chatRooms);
+  const {chatRooms , socket} = useSelector(state => state.chat);
   return (
     <Row className="mt-5 w-100">
 
@@ -15,14 +14,18 @@ const AdminChatsPage = () => {
       </Col>
 
       <Col md={10} className="d-flex flex-wrap">
-      {Object.entries(chatRooms).map((chatRoom , index) => 
-        <AdminChatRoomComponent key={index} chatRoom={chatRoom}/>
+    <Row>
+        {Object.entries(chatRooms).map((chatRoom , index) => 
+        <AdminChatRoomComponent key={index} 
+        chatRoom={chatRoom} roomIndex={index + 1} socketUser={chatRoom[0]} socket={socket}/>
       )}
 
+    </Row>
       </Col>
 
     </Row>
   )
 }
+
 
 export default AdminChatsPage;

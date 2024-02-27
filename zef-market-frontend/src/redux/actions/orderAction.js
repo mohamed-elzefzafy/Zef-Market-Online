@@ -1,5 +1,38 @@
 import request from "../../utils/request";
-import { GET_FIRST_DATE, GET_SECOND_DATE, GET_USER_ORDERS } from "../constants";
+import {  ADD_TO_CART, CREATE_ORDER, GET_FIRST_DATE, GET_SECOND_DATE, GET_USER_ORDERS } from "../constants";
+
+
+    export const createOrder = (paymentMethod) =>  async(dispatch) => {
+      try {
+        const {data} =  await request.post("/api/v1/orders" , {paymentMethod});
+        
+        dispatch({
+          type : ADD_TO_CART,
+          payLoad : data?.deletedCart
+        })
+        return data?.newOrder;
+      } catch (error) {
+        console.log(error.response.data);
+      }
+        }
+
+        export const getOrder = (id) =>  async(dispatch) => {
+          try {
+            const {data} =  await request.get(`/api/v1/orders/user/${id}`);
+            
+            dispatch({
+              type : CREATE_ORDER,
+              payLoad : data
+            })
+            return data;
+          } catch (error) {
+            console.log(error.response.data);
+          }
+            }
+          
+
+      
+  
 
 
 

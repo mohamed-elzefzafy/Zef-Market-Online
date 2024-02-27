@@ -37,7 +37,7 @@ function App() {
 <ToastContainer theme={"colored"} position={"top-center"}/>
 <HeaderComponent/>
   <Routes>
-  {/* <Route element={<RoutesWithUserChatComponent/>}>  */}
+  <Route element={<RoutesWithUserChatComponent/>}> 
       {/* public routes  */}
       <Route path="/"  element={<HomePage/>}/>
     <Route path="/product-list"  element={<ProductListPage/>}/>
@@ -55,8 +55,8 @@ function App() {
     <Route path="/login"  element={<LoginPage/>}/>
     <Route path="/register"  element={<RegisterPage/>}/>
     <Route path="*"  element={"page not found"}/>
-  {/* </Route> */}
-  UserUpdateProfilePhoto
+  </Route>
+
   {/* user protected routes  */}
   <Route element={<ProtectedRoutesComponent admin={false}/>}>
   <Route path="/user"  element={<UserProfilePage/>}/>

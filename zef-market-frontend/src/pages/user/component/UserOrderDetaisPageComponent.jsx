@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Alert, Button, Col, Container, Form, ListGroup, Row } from 'react-bootstrap'
 import CartItemComponent from '../../../components/CartItemComponent'
 import { useParams } from 'react-router-dom'
+import { useDispatch } from 'react-redux';
 
 const UserOrderDetaisPageComponent = ({userInfo , getOrder , loadScript , loadPaypalScript}) => {
   const [order, setOrder] = useState();
+  const dispatch = useDispatch();
   const [paymentMethod, setPaymentMethod] = useState("");
   const [IsPaid, setIsPaid] = useState(false);
   const [orderButtonMessage, setorderButtonMessage] = useState("");
@@ -14,7 +16,7 @@ const UserOrderDetaisPageComponent = ({userInfo , getOrder , loadScript , loadPa
   const {id} = useParams();
 
   useEffect(() => {
-    getOrder(id).then(data =>{ 
+    dispatch(getOrder(id)).then(data =>{ 
       setOrder(data);
       if(data?.IsPaid) {
         setorderButtonMessage("your order is finished");

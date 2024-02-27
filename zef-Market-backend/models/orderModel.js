@@ -4,12 +4,13 @@ const UserModel = require("./userModel");
 const OrderSchema = new mongoose.Schema({
   user : { type : mongoose.Schema.Types.ObjectId , ref : UserModel , required : true},
   orderTotal : {
-    itemsCount : { type : Number , required : true},
+    carItemsLength : { type : Number , required : true},
     cartSubtotal : { type : Number , required : true},
   },
   cartItems : [
     {
       name : {type : String , required : true},
+      productId : {type : String , required : true},
       price : {type : Number , required : true},
       images : {type : Object , required : true},
       quantity : {type : Number , required : true},
@@ -45,7 +46,6 @@ deliverdAt : {type : Date},
   const OrderModel =  mongoose.model("Order" , OrderSchema);
 
   OrderModel.watch().on("change", (data) => {
-    console.log(data);
     if (data.operationType === "insert") {
       io.emit("newOrder", data.fullDocument);
   }

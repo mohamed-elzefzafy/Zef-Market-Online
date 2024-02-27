@@ -2,15 +2,13 @@ import { useSelector } from "react-redux";
 import UserOrderDetaisPageComponent from "./component/UserOrderDetaisPageComponent";
 import request from "../../utils/request";
 import { loadScript } from "@paypal/paypal-js";
+import { getOrder } from "../../redux/actions/orderAction";
 
 
 const UserOrderDetaisPage = () => {
   const {userInfo} = useSelector(state => state.userRegisterLogin);
 
-  const getOrder = async(id) => {
-  const {data} =  await request.get(`/api/v1/orders/user/${id}`);
-  return data;
-  }
+
 
   const loadPaypalScript = (cartSubTotal , cartItems) => {
     loadScript({"client-id" : "Aeu2WO-LF8S5SaGvnCb-QX4jbhaeBr7wn84wfAu121_I-Jf5BOxqHmBP_k-RExisvEGpJyM9TAxXaSEb"})
@@ -52,7 +50,6 @@ return {
         onCancel :onCancelHandler,
         onApprove :function (data, actions) {
           return actions.order.capture().then(function (orderData) {
-            console.log(orderData);
             // var transaction = orderData.purchase_units[0].payments.captures[0];
             // if (transaction.status === "COMPLETED" && Number(transaction.amount.value) === Number(cartSubTotal)) {
             //   console.log("db");

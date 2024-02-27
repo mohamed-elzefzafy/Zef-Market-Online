@@ -20,7 +20,7 @@ const dispatch = useDispatch();
      
  
      await  dispatch(updateUserProfilePhoto(data?.loggedUser))
-     console.log(data?.loggedUser);
+  
      if (localStorage.getItem("userInfo") )
      {
        localStorage.setItem("userInfo" , JSON.stringify(data?.loggedUser))
@@ -31,8 +31,6 @@ const dispatch = useDispatch();
        sessionStorage.setItem("userInfo" , JSON.stringify(data?.loggedUser))
      }
      
-     console.log(data);
-     // return data;
     }
     
   }

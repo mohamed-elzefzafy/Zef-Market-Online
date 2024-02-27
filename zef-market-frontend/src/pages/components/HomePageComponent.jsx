@@ -3,12 +3,13 @@ import ProductCarouselComponent from '../../components/ProductCarouselComponent'
 import { Container, Row } from 'react-bootstrap'
 import CategoryCardComponent from '../../components/CategoryCardComponent'
 import { useSelector } from 'react-redux'
+import MetaComponent from '../../components/MetaComponent'
 
 const HomePageComponent = ({categories}) => {
   const {bestSellerProducts} = useSelector(state => state.products)
-  console.log(bestSellerProducts);
   return (
     <>
+    <MetaComponent/>
     <ProductCarouselComponent bestSellerProducts={bestSellerProducts}/>
     <Container>
 

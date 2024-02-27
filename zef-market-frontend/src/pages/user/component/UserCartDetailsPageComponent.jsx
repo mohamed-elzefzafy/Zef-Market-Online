@@ -3,20 +3,25 @@ import CartItemComponent from './../../../components/CartItemComponent';
 import { useEffect, useState } from "react";
 import { logOut } from "../../../redux/actions/userActions";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { getUserCart } from "../../../redux/actions/cartActions";
 
 
-const UserCartDetailsPageComponent = ({cartItems , itemCount, cartSubtotal , dispatch , addToCart , 
+const UserCartDetailsPageComponent = ({ dispatch , addToCart , 
   removeFromCart , userInfo , getUser , createOrder }) => {
   const [ButtonDisabled, setButtonDisabled] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("Cash");
+  const {cartDetails} = useSelector(state => state.cart); 
+  const {createdOrder} = useSelector(state => state.orders); 
+  const [loading, setLoading] = useState(false);
 const navigate = useNavigate();
   const changeCount = (_id , count) => {
     dispatch(addToCart(_id , count));
   }
 
-  const removeFromCartHandler = (_id , count , price) => {
+  const removeFromCartHandler = (id ) => {
     if (window.confirm("Are you sure ?")) {
-      dispatch(removeFromCart(_id , count , price))
+      dispatch(removeFromCart(id))
     }
   }
 
@@ -30,37 +35,47 @@ const navigate = useNavigate();
     }).catch(() => dispatch(logOut()))
   } ,[userInfo?._id])
 
+  useEffect(() => {
+    dispatch(getUserCart())
+  },[loading])
 
-  const orderHandler = () => {
-    const orderData = {
-      cartItems :cartItems.map(item => {
-        return {
-          name : item.name,
-          price : item.price,
-          images : item.images,
-          quantity : item.quantity,
-          count :item.count,
-          productId : item._id
-        }
-      }),
-    orderTotal : {
-      itemsCount : itemCount,
-    cartSubtotal : cartSubtotal
-    },
-     paymentMethod : paymentMethod
-    }
+  // const orderHandler = () => {
+  //   const orderData = {
+  //     cartItems :cartDetails.cartItems.map(item => {
+  //       return {
+  //         name : item.name,
+  //         price : item.price,
+  //         images : item.images,
+  //         quantity : item.quantity,
+  //         count :item.count,
+  //         productId : item._id
+  //       }
+  //     }),
+  //   orderTotal : {
+  //     itemsCount : cartDetails?.orderTotal?.carItemsLength,
+  //   cartSubtotal :  cartDetails?.orderTotal?.cartSubtotal,
+  //   },
+  //    paymentMethod : paymentMethod
+  //   }
 
-    createOrder(orderData).then(data => {
+  //   createOrder(orderData).then(data => {
 
-      navigate(`/user/order-details/${data?._id}`)
-    }).catch(error => console.log(error));
+  //     navigate(`/user/order-details/${data?._id}`)
+  //   }).catch(error => console.log(error));
     
-    }
+  //   }
+
+    const orderHandler =async () => {
+      setLoading(true);
+const data = await  dispatch(createOrder(paymentMethod));
+
+  navigate(`/user/order-details/${data?._id}`)
+setLoading(false)
+}
   
     const choosePaymentMethod = (e) => {
        setPaymentMethod(e.target.value)
     }
-
   return (
     <Container fluid>
     <Row className="mt-4">
@@ -97,7 +112,7 @@ const navigate = useNavigate();
     
     
       <ListGroup variant="flush">
-      {cartItems?.map((item , index) =>
+      {cartDetails?.cartItems?.map((item , index) =>
     
     <CartItemComponent key={index} item={item} changeCount={changeCount} removeFromCartHandler={removeFromCartHandler}/>
     
@@ -112,10 +127,10 @@ const navigate = useNavigate();
     
     <ListGroup>
       <ListGroup.Item><h3>Order Summary</h3></ListGroup.Item>
-      <ListGroup.Item> Items Price (After Tax) : <span className="fw-bold">${cartSubtotal}</span></ListGroup.Item>
+      <ListGroup.Item> Items Price (After Tax) : <span className="fw-bold">${cartDetails?.orderTotal?.cartSubtotal}</span></ListGroup.Item>
       <ListGroup.Item> Shipping: <span className="fw-bold">Included</span></ListGroup.Item>
       <ListGroup.Item> Tax: <span className="fw-bold">Included</span></ListGroup.Item>
-      <ListGroup.Item className="text-danger">Total price: <span className="fw-bold">${cartSubtotal}</span></ListGroup.Item>
+      <ListGroup.Item className="text-danger">Total price: <span className="fw-bold">${cartDetails?.orderTotal?.cartSubtotal}</span></ListGroup.Item>
       <ListGroup.Item > <div className="d-grid gap-2">
       <Button onClick={orderHandler} disabled={ButtonDisabled} variant="danger" size="lg" type="button">Place order</Button> 
       </div> </ListGroup.Item>

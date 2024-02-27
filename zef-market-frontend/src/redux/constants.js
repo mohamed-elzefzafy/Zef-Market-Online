@@ -16,3 +16,7 @@ export const GET_FIRST_DATE = "GET_FIRST_DATE";
 export const GET_SECOND_DATE = "GET_SECOND_DATE";
 export const GET_USER_ORDERS = "GET_USER_ORDERS";
 export const SET_CHAT_ROOMS = "SET_CHAT_ROOMS";
+export const SET_SOCKET = "SET_SOCKET";
+export const MESSAGE_RECIVED = "MESSAGE_RECIVED";
+export const REMOVE_CHAT_ROOM = "REMOVE_CHAT_ROOM";
+export const CREATE_ORDER = "CREATE_ORDER";

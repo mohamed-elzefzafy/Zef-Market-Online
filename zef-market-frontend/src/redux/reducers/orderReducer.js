@@ -1,9 +1,10 @@
-import { GET_FIRST_DATE, GET_SECOND_DATE, GET_USER_ORDERS } from "../constants";
+import { CREATE_ORDER, GET_FIRST_DATE, GET_SECOND_DATE, GET_USER_ORDERS } from "../constants";
 
 const initialState = {
   alluserOrders: [],
   firstDateOrders : [],
   secondDateOrders : [],
+  createdOrder :{},
 
 }
 export const ordersReducer = (state = initialState, action) => {
@@ -22,6 +23,11 @@ export const ordersReducer = (state = initialState, action) => {
     return {
       ...state,
       secondDateOrders : action.payLoad
+    } 
+    case CREATE_ORDER: 
+    return {
+      ...state,
+      createdOrder : action.payLoad
     } 
 
     default :

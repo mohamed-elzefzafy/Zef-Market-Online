@@ -93,7 +93,6 @@ image = {
   }
 
   const productsForCategory = await ProductModel.find({category : req.params.categoryId});
-  console.log(productsForCategory);
 // const publicIds = productsForCategory.map(product => product.images.public_id);
 // let publicIds = [];
 

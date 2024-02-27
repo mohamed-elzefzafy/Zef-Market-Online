@@ -20,14 +20,9 @@ const reducer = combineReducers({
   chat : chatReducer
 })
 
-const cartLocalStorage = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];
 
 const initialState = {
-  cart : {
-    cartItems : cartLocalStorage ,
-    itemCount : cartLocalStorage && cartLocalStorage.length > 0 ? cartLocalStorage.reduce((quantity, item) =>  quantity + Number(item.quantity), 0) : 0 ,
-    cartSubtotal :cartLocalStorage && cartLocalStorage.length > 0  ? cartLocalStorage.reduce((price , item) => price + Number(item.quantity * item.price) , 0) : 0,
-  } , 
+
   userRegisterLogin : {
     userInfo :localStorage.getItem("userInfo") ? 
     JSON.parse(localStorage.getItem("userInfo")) :

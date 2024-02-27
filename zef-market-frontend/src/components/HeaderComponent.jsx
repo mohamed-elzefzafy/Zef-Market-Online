@@ -7,9 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getCategories } from "../redux/actions/categoryActions";
 import DropdownItem from "react-bootstrap/esm/DropdownItem";
+import { messageRecivedAction, removeChatRoom, setChatRooms, setSocket } from "../redux/actions/chatActions";
 import { serverUrl } from "../utils/serverUrl";
 import socketIOClient from "socket.io-client";
-import { setChatRooms } from "../redux/actions/chatActions";
+import { getUserCart } from "../redux/actions/cartActions";
 const socket = socketIOClient(serverUrl, { transports: ["websocket"] });
 
 
@@ -21,15 +22,14 @@ const HeaderComponent = () => {
   const [categoryIdSelected, setCategoryIdSelected] = useState();
   const [searchQuery, setSearchQuery] = useState("");
   const {userInfo} = useSelector(state => state.userRegisterLogin);
-  const {cartItems} = useSelector(state => state.cart);
+  const {cartDetails} = useSelector(state => state.cart);
   const {categories} = useSelector(state => state.getCategories);
+  const {messageRecieved} = useSelector(state => state.chat);
 
-
-
-  
   
   useEffect(()=> {
     dispatch(getCategories());
+    dispatch(getUserCart());
   },[dispatch])
 
   const logOutHandle = async() => {
@@ -54,11 +54,22 @@ const HeaderComponent = () => {
 
   useEffect(()=>{
     if (userInfo.isAdmin) {
-      socket.on("server sends message from client to server" , ({message}) => {
-        dispatch(setChatRooms("userrrrr" , message));
+      // var audio = new Audio("/audio/chat-msg.mp3");
+      socket.emit("admin connected with server" , "admin" + Math.floor(Math.random() * 100000000000))
+      socket.on("server sends message from client to admin" , ({user , message}) => {
+
+        dispatch(setSocket(socket));
+        dispatch(setChatRooms(user, message));
+        dispatch(messageRecivedAction(true));
+        // audio.play();
+      })
+      socket.on("disconnected" , ({reason , socketId}) => {
+    
+        dispatch(removeChatRoom(socketId))
       })
     }
   },[userInfo.isAdmin])
+  
   return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" fixed="top" >
           <Container>
@@ -110,8 +121,12 @@ const HeaderComponent = () => {
   <LinkContainer to="/admin/orders">
               <Nav.Link>
               Admin : {`${userInfo?.name} ${userInfo?.lastName}`}
-              <span className="position-absolute top-1 start-10 translate-middle
+            {messageRecieved && 
+              <LinkContainer to="/admin/chats">
+              <span oncl className="position-absolute top-1 start-10 translate-middle
               p-2 bg-danger border border-light rounded-circle"></span>
+              </LinkContainer>
+            }
               </Nav.Link>
               </LinkContainer>
   </>
@@ -161,9 +176,9 @@ const HeaderComponent = () => {
           userInfo?.name && !userInfo.isAdmin &&
           <LinkContainer to="/cart">
                   <Nav.Link style={{position : "relative"}}>
-                  {cartItems?.length > 0 &&
+                  {cartDetails?.orderTotal?.carItemsLength > 0 &&
                     <Badge pill bg="danger">
-                  {cartItems?.length}
+                  {cartDetails?.orderTotal?.carItemsLength}
                 </Badge>}
                 <i className="bi bi-cart-dash"></i>
               <span className="ms-1">  CART</span>

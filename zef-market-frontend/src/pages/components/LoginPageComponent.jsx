@@ -27,9 +27,9 @@ loginUserApiRequest(email, password , doNotLogout).then(res => {
     dispatch(setReduxUserState(res.loggedUser))
   }
 if (res.success === "user logged in successfully" && res.loggedUser.isAdmin)
-   window.location.href = "/admin/orders"
+   window.location.assign("/admin/orders");
  else if (res.success === "user logged in successfully" && !res.loggedUser.isAdmin)
- window.location.href ="/user"
+ window.location.assign("/user");
 }).catch((error) =>
   setLoginUserRsponseState({error :   error?.response?.data?.message ? error?.response?.data?.message : error?.response?.data})
   

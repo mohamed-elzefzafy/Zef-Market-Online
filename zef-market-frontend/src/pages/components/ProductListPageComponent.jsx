@@ -50,11 +50,9 @@ useEffect(() => {
   useEffect(() => {
     getProducts(categoryId, pageNumParam , searchQuery , filters , sortOption)
     .then(prods => {
-      console.log(pageNumParam);
       setProducts(prods?.products);
       setpaginationLinksNumber(prods?.pageLinksNumber);
       setpageNumber(prods?.pageNum);
-      console.log(proceedFilters(filters));;
     setLoading(false);
     })
     .catch(err => {console.log(err)
@@ -72,7 +70,6 @@ useEffect(() => {
       attrs : attrsFromFilter,
     })
   }
-console.log(filters);
 
   const resetFilter = () => {
     setShowResetFilterButton(false);

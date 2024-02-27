@@ -16,8 +16,16 @@ const AdminOrderDetailsPage = () => {
       return data;
     }
     }
+
+    const markAsBaid = async (id) => {
+      const {data} = await request.put(`/api/v1/orders/paid/${id}`);
+      if (data) {
+        return data;
+      }
+      }
+
   return (
-<OrderDetailsPageComponent getOrder={getOrder} markAsDeliver={markAsDeliver}/>
+<OrderDetailsPageComponent getOrder={getOrder} markAsDeliver={markAsDeliver} markAsBaid={markAsBaid}/>
   )
 }
 

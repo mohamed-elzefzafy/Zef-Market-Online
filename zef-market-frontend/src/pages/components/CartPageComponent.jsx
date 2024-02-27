@@ -5,7 +5,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 
 
 
-const CartPageComponent = ({addToCart , cartItems , cartSubtotal , dispatch , removeFromCart}) => {
+const CartPageComponent = ({addToCart , cartDetails  , dispatch , removeFromCart}) => {
 
   const changeCount = (_id , count) => {
  dispatch(addToCart(_id , count))
@@ -24,24 +24,24 @@ const CartPageComponent = ({addToCart , cartItems , cartSubtotal , dispatch , re
 <h1>Shopping Cart</h1>
 
 <ListGroup variant="flush">
-{cartItems?.map((item , index) => (
+{cartDetails?.cartItems?.map((item , index) => (
     <CartItemComponent key={index} item={item} changeCount={changeCount} 
     removeFromCartHandler={removeFromCartHandler}/> 
 ))}
 </ListGroup>
 
-{cartItems?.length === 0 && <Alert variant="info">Your Cart is Empty</Alert>}
+{cartDetails?.orderTotal?.carItemsLength === 0 && <Alert variant="info">Your Cart is Empty</Alert>}
     </Col>
 
     <Col md={4}>
     <ListGroup >
       <ListGroup.Item>  <h3 >Subtotal
-       { cartItems?.length > 0   &&
-        <span> {cartItems?.length} items </span> } </h3> </ListGroup.Item>
-      <ListGroup.Item> Price <span className="fw-bold">300$</span></ListGroup.Item>
+       {cartDetails?.orderTotal?.carItemsLength > 0   &&
+        <span> {cartDetails?.orderTotal?.carItemsLength} items </span> } </h3> </ListGroup.Item>
+      <ListGroup.Item> Price <span className="fw-bold">{cartDetails?.orderTotal?.cartSubtotal}$</span></ListGroup.Item>
       <ListGroup.Item> 
       <LinkContainer to="/user/cart-details">
-      <Button type="button" disabled={cartItems?.length === 0} variant="primary">Proceed To Checkout</Button>
+      <Button type="button" disabled={cartDetails?.orderTotal?.carItemsLength === 0} variant="primary">Proceed To Checkout</Button>
       </LinkContainer>
 
       </ListGroup.Item>

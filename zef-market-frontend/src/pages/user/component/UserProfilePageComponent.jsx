@@ -44,7 +44,6 @@ const UserProfilePageComponent = ({updateUserApiRequest , userInfo}) => {
        Address , Country , zipCode , city  , state , password).then(data =>{ 
         setLoginUserRsponseState({loading : false , succes : data.success , error : "" })
         dispatch(setReduxUserState(data?.updatedUser))
-        console.log(data);
       }).catch(error => 
         setLoginUserRsponseState({error :   error?.response?.data?.message ? error?.response?.data?.message : error?.response?.data})
         )

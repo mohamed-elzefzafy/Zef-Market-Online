@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { getOneProduct } from "../../redux/actions/productActions";
 import { createReview, deleteReview, deleteReviewByAdmin, updateReview } from "../../redux/actions/reviewAction";
 import { ToastContainer, toast } from "react-toastify";
+import MetaComponent from "../../components/MetaComponent";
 
 
 
@@ -92,7 +93,9 @@ setReviedMsg(false);
     await dispatch(deleteReviewByAdmin(id , reviewId))
   }
   return (
-    <Container>
+<>
+<MetaComponent title={"Zef Market - " + oneProduct?.name} description={oneProduct?.description}/>
+<Container>
     <AddToCartMessageComponent showCartMessage={showCartMessage} setShowCartMessage={setShowCartMessage}/>
     <Row className="mt-5">
 
@@ -128,13 +131,19 @@ setReviedMsg(false);
                    Quantity : 
           <Form.Select disabled={oneProduct?.count < 1 }  value={quantity} onChange={(e) => setQuantity(e.target.value)}  aria-label="Default select example">
           <option>{oneProduct?.count < 1 ? "out of Stock" : "Choose"}</option>
-          {[...Array(oneProduct?.count).keys()].map(count => 
+          {
+           oneProduct.count > 0 ? (
+            [...Array(oneProduct?.count)?.keys()]?.map(count => 
             <option key={count} value="1">{count + 1}</option>
-          )}
+          )
+           ) : (
+            <option disabled value="0">0</option>
+           )
+          }
     
         </Form.Select>
 
-        <input type="number" disabled={oneProduct?.count < 1 } max={oneProduct?.count} min={1} style={{width : "70px" , outline : "none" , border : "1px solid gray" ,  }} className="ms-2 p-0" />
+        {/* <input type="number" disabled={oneProduct?.count < 1 } max={oneProduct?.count} min={1} style={{width : "70px" , outline : "none" , border : "1px solid gray" ,  }} className="ms-2 p-0" /> */}
           </ListGroup.Item>
           <ListGroup.Item>
           <Button className="cursor-pointer" disabled={oneProduct?.count < 1 }  onClick={addToCartHandler} variant="danger">Add To Cart {oneProduct?.count < 1  ? ("Not Avaliable") : ""}</Button>
@@ -242,6 +251,7 @@ setReviedMsg(false);
           </Col>
         </Row>
     </Container>
+</>
   )
 }
 

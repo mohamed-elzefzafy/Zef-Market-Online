@@ -1,6 +1,8 @@
-import { SET_CHAT_ROOMS } from "../constants"
+import { MESSAGE_RECIVED, REMOVE_CHAT_ROOM, SET_CHAT_ROOMS, SET_SOCKET } from "../constants"
 
 const initialState = {
+  socket : false,
+  messageRecieved : false,
   chatRooms : {},
 }
 
@@ -20,7 +22,25 @@ export const chatReducer = (state = initialState , action) => {
         chatRooms : {...currentState.chatRooms , [action.payLoad.user] : [{client : action.payLoad.message}]}
       }
     }
-  
+    case SET_SOCKET :
+      return {
+        ...state,
+        socket : action.payLoad.socket,
+      }
+
+      case MESSAGE_RECIVED :
+        return {
+          ...state,
+          messageRecieved : action.payLoad.value,
+        }
+        case REMOVE_CHAT_ROOM :
+      let currentState2 = {...state};
+      delete currentState2.chatRooms[action.payLoad.socketId];
+      return {
+        ...state,
+        chatRooms : {...currentState2.chatRooms}
+      }
+    
     default :
     return state;
   }

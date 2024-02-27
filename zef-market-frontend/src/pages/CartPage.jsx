@@ -5,10 +5,10 @@ import { addToCart, removeFromCart } from "../redux/actions/cartActions";
 
 
 const CartPage = () => {
-  const {cartItems , cartSubtotal} = useSelector(state => state.cart)
+  const {cartDetails} = useSelector(state => state.cart);
   const dispatch = useDispatch();
   return (
-<CartPageComponent addToCart={addToCart} cartItems={cartItems} cartSubtotal={cartSubtotal} dispatch={dispatch}   removeFromCart={removeFromCart}/>
+<CartPageComponent addToCart={addToCart} cartDetails={cartDetails}  dispatch={dispatch}   removeFromCart={removeFromCart}/>
   )
 }
 

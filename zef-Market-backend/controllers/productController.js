@@ -45,7 +45,7 @@ if (req.query.category) {
 // let a = req.query.category.split(",").map((item) => {
 //   if (item) return new RegExp("^" + item)
 // })
-console.log(req.query.category);
+
   categoryQueryCondition = { category : req.query.category };
 }
 
@@ -70,39 +70,6 @@ return acc;
 }
 
 
-
-
-////////////////////////////////
-// let attrsQueryCondition = [];
-// if (req.query.attrs) {
-//   // attrs=RAM-1TB-2TB-4TB,color-blue-red
-//   // [ 'RAM-1TB-4TB', 'color-blue', '' ]
-//   attrsQueryCondition = req.query.attrs.split(",").reduce((acc, item) => {
-//     if (item) {
-//       let a = item.split("-");
-//       let values = [...a];
-//       values.shift(); // removes first item
-//       let a1 = {
-//         attrs: { $elemMatch: { key: a[0], value: { $in: values } } },
-//       };
-//       acc.push(a1);
-//       // console.dir(acc, { depth: null })
-//       return acc;
-//     } else return acc;
-//   }, []);
-//   //   console.dir(attrsQueryCondition, { depth: null });
-//   queryCondition = true;
-// }
-////////////////////////////////
-
-
-
-
-
-
-
-
-
     //pagination
 const pageNum = Number(req.query.page) || 1;
 
@@ -112,7 +79,7 @@ const sortOption = req.query.sort || "";
 if (sortOption) {
 const newSortOption = sortOption.split("_");
 sort = {[newSortOption[0]] : Number(newSortOption[1])}
-console.log(sort);
+
 }
 
 
@@ -635,9 +602,9 @@ await categoryExist.save();
     return res.status(400).json("this attribute not exist"); 
   }
   let newproductAttr = product.attrs;
-  console.log(newproductAttr);
+
   newproductAttr = product.attrs.filter(a => a.key !== req.body.attribute);
-  console.log(newproductAttr);
+
   product.attrs = newproductAttr;
 
   await product.save();
@@ -720,7 +687,7 @@ for (let file of files) {
   const result =  await cloudinaryUploadImage(file);
 results.push(result);
 }
-console.log("res" ,  results);
+
 
 let resultsArrayOfObjects = [];
  results.map(oneResult => {
@@ -730,7 +697,7 @@ resultsArrayOfObjects.push( {
 })
 })
 
-console.log("ar" ,resultsArrayOfObjects);
+
 
 
 product.images = resultsArrayOfObjects;

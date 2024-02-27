@@ -39,7 +39,6 @@ const RegisterPageComponent = ({registerApiRequest , setReduxUserState ,  dispat
 setLoginUserRsponseState({loading : true})
      registerApiRequest(formData)
      .then(data => {
-      console.log(data);
       setLoginUserRsponseState({succes : data.success ,  loading : false});
       if (data?.createdUser ) 
       {

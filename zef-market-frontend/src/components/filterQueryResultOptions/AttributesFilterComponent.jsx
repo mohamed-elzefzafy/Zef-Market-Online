@@ -19,7 +19,6 @@ const AttributesFilterComponent = ({attrFilter , setAttrsFromFilter , attrsFromF
         value={val}
         onChange={e => {
           setAttrsFromFilter(item => {
-            console.log(attrsFromFilter);
             if (e.target.checked) {
               let existKey = attrsFromFilter?.find(a => a.key === attr.key)
               if (existKey) {

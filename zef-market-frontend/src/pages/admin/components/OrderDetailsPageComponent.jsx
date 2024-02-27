@@ -2,15 +2,15 @@ import { Alert, Button, Col, Container, Form, ListGroup, Row } from "react-boots
 import CartItemComponent from "../../../components/CartItemComponent"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import request from './../../../utils/request';
 import { useDispatch } from "react-redux";
 import { logOut } from "../../../redux/actions/userActions";
 
 
-const OrderDetailsPageComponent = ({getOrder , markAsDeliver}) => {
+const OrderDetailsPageComponent = ({getOrder , markAsDeliver , markAsBaid}) => {
   const dispatch = useDispatch();
 const [orderDetails, setOrderDetails] = useState();
 const [updateDeliver, setUpdateDeliver] = useState(false);
+const [updatePaid, setUpdatePaid] = useState(false);
 const {id} = useParams();
   useEffect(() => {
 getOrder(id).then((order) => setOrderDetails(order)).catch((error) =>
@@ -22,6 +22,10 @@ await markAsDeliver(id);
 setUpdateDeliver(!updateDeliver);
 }
 
+const updateToPaid =  async (id) => {
+  await markAsBaid(id);
+  setUpdatePaid(!updatePaid);
+  }
   return (
     <Container fluid>
     <Row className="mt-4">
@@ -38,8 +42,8 @@ setUpdateDeliver(!updateDeliver);
         <Col md={6}>
         <h2>Payment Method</h2>
         <Form.Select value={orderDetails?.paymentMethod} disabled={true}>
-          <option value="pp">paybal</option>
-          <option value="cod">Cash On Delivery</option>
+          {/* <option value="pp">paybal</option> */}
+          <option value="cod">{orderDetails?.paymentMethod}</option>
         </Form.Select>
         </Col>
         <Row>
@@ -81,9 +85,15 @@ setUpdateDeliver(!updateDeliver);
       <ListGroup.Item> Shipping: <span className="fw-bold">Included</span></ListGroup.Item>
       <ListGroup.Item> Tax: <span className="fw-bold">Included</span></ListGroup.Item>
       <ListGroup.Item className="text-danger"> Total Price: <span className="fw-bold">{orderDetails?.orderTotal?.cartSubtotal}$</span></ListGroup.Item>
-      <ListGroup.Item > <Button onClick={() => updateToDeliver(id)}  disabled={orderDetails?.isDelivered ? true : false} variant="danger" className="w-100">
+      <ListGroup.Item >
+       <Button onClick={() => updateToDeliver(id)}  disabled={orderDetails?.isDelivered ? true : false} variant="danger" className="w-100">
        {orderDetails?.isDelivered ?  "Order is Finished" : "Mark As Deliverd "   }     
-      </Button> </ListGroup.Item>
+      </Button> 
+
+      <Button onClick={() => updateToPaid(id)}  disabled={orderDetails?.isPaid ? true : false} variant="danger" className="w-100 mt-2">
+       {orderDetails?.isPaid ?  "Order is Finished" : "Mark As paid "   }     
+      </Button> 
+      </ListGroup.Item>
     </ListGroup>
       </Col>
     
@@ -92,4 +102,4 @@ setUpdateDeliver(!updateDeliver);
   )
 }
 
-export default OrderDetailsPageComponent
+export default OrderDetailsPageComponent;

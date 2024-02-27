@@ -8,28 +8,57 @@ const socket = socketIOClient(serverUrl, { transports: ["websocket"] });
 
 const UserChatComponent = () => {
 
-const [socketState, setSocketState] = useState();
+const [socketState, setSocketState] = useState(false);
 const [chat, setChat] = useState([]);
+const [messageRecived, setMessageRecived] = useState(false);
 const {userInfo} = useSelector(state => state.userRegisterLogin);
+const [chatConnectionInfo, setchatConnectionInfo] = useState(false);
+const [reconnect, setReconnect] = useState(false);
 
 
 useEffect(() => {
   if (!userInfo?.isAdmin) {
+    setReconnect(false);
+var audio = new Audio("/audio/chat-msg.mp3");
+socket.on("admin not found" , () => {
+  setChat((chat) => {
+    return [...chat , {admin : "no admin avaliable now"}]
+   })
+})
 
-    setSocketState(socket);
+
+    socket.on("server sends message from admin to client" , (msg) => {
+      setChat((chat) => {
+        return [...chat , {admin : msg}]
+       })
+       setMessageRecived(true);
+       audio.play();
+       setTimeout(() => {
+        const chatMessage = document.querySelector(".chat-msg");
+       chatMessage.scrollTop = chatMessage.scrollHeight;
+       }, 100);
+    })
+        setSocketState(socket);
+        socket.on("admin closed chat" , () => {
+          setChat([]);
+          setchatConnectionInfo("admin closed chat type something and submit to reconnect");
+          setReconnect(true);
+        })
     // return () => socket.disconnect();
   }
 
-},[!userInfo?.isAdmin])
+},[userInfo?.isAdmin , reconnect])
 
 
 const clientSubmitChatMessage = (e) => {
   if (e.keyCode && e.keyCode !== 13) {
     return;
 }
+setchatConnectionInfo("");
+setMessageRecived(false);
 const msg = document.getElementById("clientChatMsg");
-let v =msg?.value?.trim();
-   socket.emit("client sends message" , v)
+let v = msg?.value?.trim();
+   socketState.emit("client sends message" , v)
    setChat((chat) => {
     return [...chat , {client : v}]
    })
@@ -47,8 +76,11 @@ let v =msg?.value?.trim();
       <input type="checkbox" id="check" />
       <label htmlFor="check" className="chat-btn">
         <i className="bi bi-chat-dots comment"></i>
+      {
+        messageRecived && 
         <span className="position-absolute top-0 start-10 translate-middle p-2
          bg-danger border border-light rounded-circle"></span>
+      }
         <i className="bi bi-x-circle close"></i>
       </label>
 
@@ -58,6 +90,7 @@ let v =msg?.value?.trim();
         </div>
         <div className="chat-form">
           <div className="chat-msg">
+          <p>{chatConnectionInfo}</p>
           {chat?.map((item , id) => 
           
           <div key={id}>
@@ -68,7 +101,7 @@ let v =msg?.value?.trim();
       }
         {item.admin  &&
           <p className="bg-primary p-3 ms-4 text-light rounded-pill">
-              <b>Support wrote:</b>{item.admin} 
+              <b>Support wrote : </b>{item.admin} 
             </p>
         }
           </div>)}
