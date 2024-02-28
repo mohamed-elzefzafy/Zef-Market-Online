@@ -78,8 +78,9 @@ const token =  generateAuthToken(user._id , user.name , user.lastName , user.ema
 
 res
 .cookie("access_token", token , {
-  secure: true,
-  sameSite: 'none',
+  httpOnly: true,
+  secure: process.env.NODE_ENV !== 'development', // Use secure cookies in production
+  sameSite: 'strict', // Prevent CSRF attacks
 })
 .status(201).json({success : "user created" , 
 createdUser : {
@@ -128,8 +129,9 @@ if (!validePassword) {
 }
 
 let cookieParam = {
-  secure: true,
-  sameSite: 'none',
+  httpOnly: true,
+  secure: process.env.NODE_ENV !== 'development', // Use secure cookies in production
+  sameSite: 'strict', // Prevent CSRF attacks
 }
 
 if (doNotLogout) {
