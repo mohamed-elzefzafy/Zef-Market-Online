@@ -78,8 +78,8 @@ const token =  generateAuthToken(user._id , user.name , user.lastName , user.ema
 
 res
 .cookie("access_token", token , {
-  httpOnly : true,
-  secure : process.env.NODE_ENV === "production",
+  // httpOnly : true,
+  // secure : process.env.NODE_ENV === "production",
   sameSite : "strict",
 })
 .status(201).json({success : "user created" , 
@@ -129,8 +129,8 @@ if (!validePassword) {
 }
 
 let cookieParam = {
-  httpOnly : true,
-  secure : process.env.NODE_ENV !== "production",
+  // httpOnly : true,
+  // secure : process.env.NODE_ENV !== "production",
   sameSite : "strict",
 }
 
