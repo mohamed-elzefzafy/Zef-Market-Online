@@ -22,13 +22,14 @@ global.io = new Server(httpServer);
 
 connectDb();
 
+app.use(cors());
 
-app.use(
-  cors({
-    credentials: true,
-    origin: process.env.FRONT_URL
-  })
-);
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: process.env.FRONT_URL
+//   })
+// );
 
 
 app.use(express.json());
