@@ -22,7 +22,7 @@ global.io = new Server(httpServer);
 
 connectDb();
 
-app.use(cors());
+
 
 app.use(express.json());
 app.use(cookieParser());
