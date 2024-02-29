@@ -10,10 +10,10 @@ if (!token) {
 
 try {
   const decoded = jwt.verify(token , process.env.JWT_SECRET_KEY)
-  if (decoded.isBlocked === true) {
-    res.clearCookie("access_token");
-    return  res.status(403).json("you have blocked");
-  }
+  // if (decoded.isBlocked === true) {
+  //   res.clearCookie("access_token");
+  //   return  res.status(403).json("you have blocked");
+  // }
   req.user = decoded;
   next();
 } catch (error) {
