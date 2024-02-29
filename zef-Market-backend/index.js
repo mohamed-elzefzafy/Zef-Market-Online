@@ -12,10 +12,10 @@ const mountRoutes = require("./routes/indexMountRoutes");
 const ProductModel = require("./models/productModel");
 const cookieParser = require("cookie-parser");
 
-app.use(helmet({
-    contentSecurityPolicy: false, 
-  crossOriginEmbedderPolicy: false
-}));
+// app.use(helmet({
+//     contentSecurityPolicy: false, 
+//   crossOriginEmbedderPolicy: false
+// }));
 
 const httpServer = createServer(app);
 global.io = new Server(httpServer);
@@ -24,12 +24,12 @@ connectDb();
 
 app.use(cors());
 
-// app.use(
-//   cors({
-//     credentials: true,
-//     origin: process.env.FRONT_URL
-//   })
-// );
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.FRONT_URL
+  })
+);
 
 
 app.use(express.json());
